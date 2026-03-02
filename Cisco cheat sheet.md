@@ -1,4 +1,4 @@
-# Cisco sheet cheat
+# Cisco cheat sheet 
 
 ## Router
 1. Router>```enable```
