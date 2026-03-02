@@ -1,8 +1,8 @@
 # Protocollen uit OSI model
 | Laag | Protocol | Afkorting | Korte toelichting |
 |---|----|-------------------|-----------------------------|
-| 4 | TCP | Transmission Control Protocol | Informatie betrouwbaar doorsturen |
-| 4 | UDP | User Datagram Protocol | Veel informatie snel doorsturen |
+| 4 | TCP | Transmission Control Protocol | Informatie betrouwbaar doorsturen. Vaak poort 433 of 21. Three-way-h.s.  Segment|
+| 4 | UDP | User Datagram Protocol | Veel informatie snel doorsturen. Diagram |
 
 
 # Applicatie-protocollen

@@ -1,0 +1,1 @@
+* Max poort nr is 16 bits. Ongeveer 64.000

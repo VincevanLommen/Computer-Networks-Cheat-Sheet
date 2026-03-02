@@ -13,5 +13,7 @@
 * Protocollen uit OSI model
 * Applicatie-protocollen
 
+## [Good to know](good%20to%20know.md)
+
 
 ### Vince van Lommen
