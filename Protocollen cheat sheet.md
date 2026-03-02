@@ -3,6 +3,8 @@
 |---|----|-------------------|-----------------------------|
 | 4 | TCP | Transmission Control Protocol | Informatie betrouwbaar doorsturen. Vaak poort 433 of 21. Three-way-h.s.  Segment|
 | 4 | UDP | User Datagram Protocol | Veel informatie snel doorsturen. Diagram |
+| 2 | ARP | Address Resolution Protocol | IP omzetten naar MAC
+
 
 
 # Applicatie-protocollen
