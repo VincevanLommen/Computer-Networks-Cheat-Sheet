@@ -1,4 +1,4 @@
-# Computer Networks Cheat Sheet door Vince van Lommen
+# Computer Networks Cheat Sheet
 
 ## Inhoud
 
@@ -11,3 +11,6 @@
 
 ## [Protocollen cheat sheet](Protocollen%20cheat%20sheet.md)
 * Applicatie-protocollen
+
+
+### Vince van Lommen
