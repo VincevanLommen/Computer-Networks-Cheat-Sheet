@@ -1,5 +1,11 @@
+# Protocollen uit OSI model
+| Laag | Protocol | Afkorting | Korte toelichting |
+|---|----|-------------------|-----------------------------|
+| 4 | TCP | Transmission Control Protocol | Informatie betrouwbaar doorsturen |
+| 4 | UDP | User Datagram Protocol | Veel informatie snel doorsturen |
 
-  # Applicatie-protocollen
+
+# Applicatie-protocollen
 
 | Applicatie | Protocol | Korte toelichting |
 |-----------|----------|-------------------|

@@ -10,6 +10,7 @@
 * 7 lagen van het OSi model
 
 ## [Protocollen cheat sheet](Protocollen%20cheat%20sheet.md)
+* Protocollen uit OSI model
 * Applicatie-protocollen
 
 
