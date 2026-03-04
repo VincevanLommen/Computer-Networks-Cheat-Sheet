@@ -25,7 +25,7 @@
 
 3. Switch (config) #```interface vlan 1```
 
-4. Switch (config-if) #```ip adress 192.168.1.67 255.255.255.0```
+4. Switch (config-if) #```ip address 192.168.1.67 255.255.255.0```
 
 5. Switch (config-if) #```no shutdown```
 
