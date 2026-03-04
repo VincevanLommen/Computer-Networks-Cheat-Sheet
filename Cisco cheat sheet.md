@@ -1,5 +1,7 @@
 # Cisco cheat sheet 
 
+# ip44
+
 ## Router
 1. Router>```enable```
 
@@ -36,7 +38,7 @@
 
 
 
-# TEST ipv6 (Nog niet getest in labo)
+# ipv6
 
 ## Router (IPv6)
 
