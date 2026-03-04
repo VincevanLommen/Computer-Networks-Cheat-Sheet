@@ -32,6 +32,7 @@
 ## Algemeen
 
 * Resetten door ```reload```
+* Instellingen weergeven ```Show ip int brief```
 
 
 
