@@ -64,10 +64,6 @@
 4. Switch(config-if)# `ipv6 address 2001:DB8:1::67/64`  
 5. Switch(config-if)# `no shutdown`  
 
-> Opmerking: Veel oudere switches ondersteunen IPv6 alleen voor management, niet voor L3‑routing.
-
----
-
 ## Algemeen
 
 - Resetten door `reload`  
