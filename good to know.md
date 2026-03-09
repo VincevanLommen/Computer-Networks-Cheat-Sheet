@@ -19,3 +19,10 @@
 - Offer 
 - Request
 - ACK (Acknowledge)
+
+## Lease
+
+- Enkel request en ACK
+- Bekijken via ```ipconfig /all```
+  * ```Lease Obtained. . . . . . . . . . : Monday, 9 March 2026 10:06:36```
+  * ```Lease Expires . . . . . . . . . . : Monday, 9 March 2026 10:36:54```
