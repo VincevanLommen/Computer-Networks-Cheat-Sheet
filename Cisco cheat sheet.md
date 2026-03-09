@@ -1,17 +1,21 @@
 # Cisco cheat sheet 
 
-# ip44
+# ipv4
 
 ## Router
 1. Router>```enable```
 
 2. Router#```conf term```
 
+### Interface G0/0/0
+
 3. Router(config)#```interface G0/0/0```
 
 4. Router(config-if)#```ip address 192.168.1.1 255.255.255.0```
 
 5. Router(config-if)#```no shutdown```
+
+### Interface G0/0/1
 
 6. Router(config-if)#```interface G0/0/1```
 
@@ -30,12 +34,6 @@
 4. Switch (config-if) #```ip address 192.168.1.67 255.255.255.0```
 
 5. Switch (config-if) #```no shutdown```
-
-## Algemeen
-
-* Resetten door ```reload```
-* Instellingen weergeven ```Show ip int brief```
-
 
 
 # ipv6
@@ -70,5 +68,7 @@
 ## Algemeen
 
 - Resetten door `reload`  
+- Instellingen weergeven ```Show ip int brief```
 - IPv6‑adres tonen: `show ipv6 interface brief`  
 - Routing tabel: `show ipv6 route`  
+
