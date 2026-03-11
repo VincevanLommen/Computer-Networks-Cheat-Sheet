@@ -11,7 +11,7 @@
 
 3. Router(config)#```interface G0/0/0```
 
-4. Router(config-if)#```ip address 192.168.1.1 255.255.255.0```
+4. Router(config-if)#```ip address 192.168.0.1 255.255.255.0```
 
 5. Router(config-if)#```no shutdown```
 
@@ -22,6 +22,16 @@
 7. Router(config-if)#```ip address 10.10.10.1 255.255.255.0```
    
 8. Router(config-if)#```no shutdown```
+
+### DHCP
+
+1. R1(config)#```ip dhcp excluded-address 192.168.0.1```
+2. R1(config)#```ip dhcp pool LAN```
+3. R1(dhcp-config)#```network 192.168.0.0 255.255.255.0```
+4. R1(dhcp-config)#```default-router 192.168.0.1```
+
+
+
 
 
 ## Switch
@@ -65,10 +75,13 @@
 4. Switch(config-if)# `ipv6 address 2001:DB8:1::67/64`  
 5. Switch(config-if)# `no shutdown`  
 
-## Algemeen
+# Algemeen
+- Router resetten: ```write erase```
+- Router herstarten: ```reload```
+- IPv4‑interfaces tonen: ```show ip interface brief```
+- IPv6‑interfaces tonen: ```show ipv6 interface brief```
+- IPv6‑routingtabel: ```show ipv6 route```
+- Alle poorten bekijken: ```show interfaces```
+- Hostnaam instellen: ```hostname NAAM```
 
-- Resetten door `reload`  
-- Instellingen weergeven ```Show ip int brief```
-- IPv6‑adres tonen: `show ipv6 interface brief`  
-- Routing tabel: `show ipv6 route`  
 

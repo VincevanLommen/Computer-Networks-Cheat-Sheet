@@ -26,3 +26,19 @@
 - Bekijken via ```ipconfig /all```
   * ```Lease Obtained. . . . . . . . . . : Monday, 9 March 2026 10:06:36```
   * ```Lease Expires . . . . . . . . . . : Monday, 9 March 2026 10:36:54```
+
+# IPv6
+
+* SLAAC(-only)
+* SLAAC + statless DHCPv6
+* statefull DHCPv6
+
+# protocollen
+
+* SLAAC
+* DHCPv6
+* ICMPv6 → NDP
+* RA/RS
+* A vlag → stateless
+
+* MEt dad checken als zijn IPv6 adress uniek is
