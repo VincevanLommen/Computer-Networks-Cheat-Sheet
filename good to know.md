@@ -1,6 +1,8 @@
 * Max poort nr is 16 bits. Ongeveer 64.000
-
-
+* Router is op laag 3, dus ip
+* /32 host route
+  
+  
 # IPv4 Autoconfig
 
 - Draait op applicatielaag

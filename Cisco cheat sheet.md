@@ -23,6 +23,10 @@
    
 8. Router(config-if)#```no shutdown```
 
+### Next hop
+
+1. Router(config)#```ip route 0.0.0.0 0.0.0.0 10.10.10.2```
+
 ### DHCP
 
 1. R1(config)#```ip dhcp excluded-address 192.168.0.1```
@@ -80,6 +84,7 @@
 - Router herstarten: ```reload```
 - IPv4‑interfaces tonen: ```show ip interface brief```
 - IPv6‑interfaces tonen: ```show ipv6 interface brief```
+- Route table ```show ip route```
 - IPv6‑routingtabel: ```show ipv6 route```
 - Alle poorten bekijken: ```show interfaces```
 - Hostnaam instellen: ```hostname NAAM```
