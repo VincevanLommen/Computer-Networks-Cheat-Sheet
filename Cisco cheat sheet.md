@@ -80,6 +80,7 @@
 5. Switch(config-if)# `no shutdown`  
 
 # Algemeen
+- Router opslaan: ```wr``` of ```copy running-config startup-config```
 - Router resetten: ```write erase```
 - Router herstarten: ```reload```
 - IPv4‑interfaces tonen: ```show ip interface brief```
@@ -90,3 +91,11 @@
 - Hostnaam instellen: ```hostname NAAM```
 
 
+
+
+romon → ```boot```
+
+ipconfig /release6
+ipconfig /renew6
+
+wr
