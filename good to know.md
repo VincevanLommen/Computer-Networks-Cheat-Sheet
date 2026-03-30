@@ -22,6 +22,10 @@
 - Request
 - ACK (Acknowledge)
 
+## DNS Snooping
+
+- in DHCP pakketjes kijken
+
 ## Lease
 
 - Enkel request en ACK
@@ -44,3 +48,9 @@
 * A vlag → stateless
 
 * MEt dad checken als zijn IPv6 adress uniek is
+
+
+
+- broadcast storm, lus van nutteloze broadcast pakketjes
+- bridge is een oud woord voor switch
+- met vlans apparte stp conf
