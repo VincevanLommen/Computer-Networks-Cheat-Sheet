@@ -54,3 +54,13 @@
 - broadcast storm, lus van nutteloze broadcast pakketjes
 - bridge is een oud woord voor switch
 - met vlans apparte stp conf
+
+
+
+
+• VLAN attacks
+• countermeasure = disable DTP
+
+
+• STP attacks
+• countermeasure = enable BPDUguard

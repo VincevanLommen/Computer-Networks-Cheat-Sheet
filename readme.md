@@ -3,11 +3,19 @@
 ## Inhoud
 
 ## [Cisco cheat sheet](Cisco%20cheat%20sheet.md)
-* router configureren
+* router configureren (IPv4 + IPv6)
 * switch configureren
-  
+* DHCP / DHCPv6
+* SLAAC
+
+## [Extra uitleg comandos](extra%20uitleg%20comandos.md)
+* wat betekenen de IP adressen in de commando's
+* SLAAC vs DHCPv6 uitgelegd
+* wanneer gebruik je wat
+*  **DOOR AI GESCHREVEN**
+
 ## [OSI model](OSI%20model.md)
-* 7 lagen van het OSi model
+* 7 lagen van het OSI model
 
 ## [Protocollen cheat sheet](Protocollen%20cheat%20sheet.md)
 * Protocollen uit OSI model
@@ -21,5 +29,8 @@
 * ...
 
 ## [Security](Security.md)
+
+## [Examenvoorbeeld](voorbeeld.md)
+* Static Routing + SVI + DHCP (IPv4)
 
 ### **Vince van Lommen**

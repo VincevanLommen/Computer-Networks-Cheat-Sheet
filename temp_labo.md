@@ -70,3 +70,6 @@ ipv6 autoconfig
 
 ---
 +
+
+
+ipv6 unicast-routing
