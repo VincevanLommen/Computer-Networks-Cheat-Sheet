@@ -64,3 +64,8 @@
 
 • STP attacks
 • countermeasure = enable BPDUguard
+
+
+
+# LACP
+* Link aggregatie → 2 kabels laten samenwerken

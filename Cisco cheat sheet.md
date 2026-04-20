@@ -76,6 +76,17 @@
 
 - ```show vlan brief```
 
+### Trunk configureren
+
+1. Switch(config)#```interface g0/1```
+2. Switch(config-if)#```switchport mode trunk```
+3. Switch(config-if)#```switchport trunk native vlan 99```
+4. Switch(config-if)#```switchport trunk allowed vlan 10,20,99```
+
+### Trunk bekijken
+
+- ```show interfaces trunk```
+
 
 # ipv6
 

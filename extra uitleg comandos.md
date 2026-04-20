@@ -77,7 +77,35 @@
 ## Waarom kunnen PC's in hetzelfde VLAN op verschillende switches niet pingen?
 - de trunk link (tussen switches) staat nog op VLAN 1
 - verkeer van VLAN 10/20/30 wordt niet doorgestuurd
-- oplossing: trunk configureren (zie trunk sectie)
+- oplossing: trunk configureren (zie hieronder)
+
+---
+
+# Trunk
+
+## Wat is een trunk?
+- een trunk is een verbinding tussen 2 switches (of switch en router) die verkeer van meerdere VLANs tegelijk doorlaat
+- access poort = 1 VLAN, trunk poort = meerdere VLANs
+- trunk voegt een VLAN-tag toe aan elk frame (802.1Q) zodat de andere switch weet bij welk VLAN het hoort
+
+## ```switchport mode trunk```
+- zet de poort in trunk mode
+- de poort laat nu verkeer van alle VLANs door
+
+## ```switchport trunk native vlan 99```
+- stelt het native VLAN in op 99
+- native VLAN = verkeer dat ZONDER tag verstuurd wordt
+- standaard is dit VLAN 1, maar dat is onveilig (VLAN hopping attack)
+- het native VLAN moet aan beide kanten van de trunk hetzelfde zijn!
+
+## ```switchport trunk allowed vlan 10,20,99```
+- beperkt welke VLANs over de trunk mogen
+- standaard zijn alle VLANs toegestaan
+- best practice: alleen de VLANs toelaten die je nodig hebt
+
+## ```show interfaces trunk```
+- toont alle trunk poorten, welke VLANs erop mogen, en het native VLAN
+- handig om te troubleshooten
 
 ---
 
