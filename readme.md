@@ -7,6 +7,7 @@
 * switch configureren
 * DHCP / DHCPv6
 * SLAAC
+* VLANs, Trunk, Inter-VLAN routing
 
 ## [Extra uitleg comandos](extra%20uitleg%20comandos.md)
 * wat betekenen de IP adressen in de commando's

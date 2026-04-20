@@ -87,6 +87,19 @@
 
 - ```show interfaces trunk```
 
+### Inter-VLAN routing (router-on-a-stick)
+
+1. Router(config)#```interface g0/0/0.10```
+2. Router(config-subif)#```encapsulation dot1Q 10```
+3. Router(config-subif)#```ip address 10.0.10.1 255.255.255.0```
+
+4. Router(config)#```interface g0/0/0.20```
+5. Router(config-subif)#```encapsulation dot1Q 20```
+6. Router(config-subif)#```ip address 10.0.20.1 255.255.255.0```
+
+7. Router(config)#```interface g0/0/0```
+8. Router(config-if)#```no shutdown```
+
 
 # ipv6
 

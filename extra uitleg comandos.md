@@ -109,6 +109,48 @@
 
 ---
 
+# Inter-VLAN routing (router-on-a-stick)
+
+## Wat is inter-VLAN routing?
+- VLANs kunnen standaard NIET met elkaar communiceren
+- je hebt een router nodig om verkeer tussen VLANs te routeren
+- router-on-a-stick = 1 fysieke kabel van router naar switch, maar met subinterfaces gesplitst per VLAN
+- de switch-poort naar de router moet een **trunk** zijn (anders komt alleen VLAN 1 door)
+
+## Hoe werkt het?
+- de router maakt **subinterfaces** aan op 1 fysieke poort (bv G0/0/0)
+- elke subinterface krijgt een VLAN-nummer en een IP-adres
+- dat IP-adres wordt de **default gateway** voor dat VLAN
+- de switch stuurt getagd verkeer (802.1Q) naar de router, de router routeert het naar het juiste VLAN
+
+## ```interface g0/0/0.10```
+- maakt subinterface `.10` aan op G0/0/0
+- het nummer (10) is vrij te kiezen, maar best = VLAN-nummer (voor duidelijkheid)
+- je moet ook de fysieke interface (`g0/0/0`) apart activeren met `no shutdown`
+
+## ```encapsulation dot1Q 10```
+- koppelt de subinterface aan VLAN 10
+- dot1Q = het 802.1Q trunk protocol (voegt VLAN-tag toe aan frames)
+- dit commando is VERPLICHT op elke subinterface
+
+## ```ip address 10.0.10.1 255.255.255.0```
+- geeft de subinterface een IP-adres
+- dit adres wordt de **default gateway** voor alle PC's in VLAN 10
+- elk VLAN heeft zijn eigen subnet nodig
+
+## Voorbeeld samengevat
+```
+Router: G0/0/0.10 → encapsulation dot1Q 10 → ip 10.0.10.1/24 (gateway VLAN 10)
+Router: G0/0/0.20 → encapsulation dot1Q 20 → ip 10.0.20.1/24 (gateway VLAN 20)
+Router: G0/0/0    → no shutdown (fysieke poort activeren!)
+
+Switch: G0/1      → switchport mode trunk (naar router)
+Switch: F0/1      → switchport access vlan 10 (naar PC)
+Switch: F0/9      → switchport access vlan 20 (naar PC)
+```
+
+---
+
 # ipv6
 
 ## Soorten adressen
