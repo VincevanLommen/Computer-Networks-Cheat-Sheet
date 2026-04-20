@@ -33,4 +33,7 @@
 ## [Examenvoorbeeld](voorbeeld.md)
 * Static Routing + SVI + DHCP (IPv4)
 
+## [Examenvoorbeeld Raf](voorbeeldexamen%20raf.md)
+* voorbeeldexamen gemaakt 20/04
+
 ### **Vince van Lommen**
