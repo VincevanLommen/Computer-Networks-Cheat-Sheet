@@ -35,6 +35,9 @@
 4. R1(dhcp-config)#```default-router 192.168.0.1```
 5. R1(dhcp-config)#```dns-server 8.8.8.8```
 
+### Default route
+1. R1(config)#```ip route 0.0.0.0 0.0.0.0 NEXT_HOP_IP```
+
 
 ## Switch
 1. Switch>```enable```
@@ -138,7 +141,7 @@
 17. Router(config-dhcpv6)# `domain-name lab.local`  
 
 ### Statische IPv6 route
-18. Router(config)# `ipv6 route 2001:DB8:2::/64 fe80::2 G0/0/0`  
+18. Router(config)# `ipv6 route 2001:DB8:2::/64 G0/0/0 fe80::2`  
 
 
 ## Switch (IPv6)
