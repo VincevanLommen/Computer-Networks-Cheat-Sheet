@@ -4,6 +4,7 @@
 * Eerst gebeurt altijd de DNS‑controle, pas daarna kan er een HTTP‑GET verstuurd worden. 
 * Fe:80 is link local
 * 2000 global unicast
+* VTY → SSH
 # Subnetten berekenen
 
 ## Voorbeeld
@@ -118,3 +119,56 @@ Hostadres: `10.5.19.67/23` → 32 - 23 = **9 host-bits**
 
 # LACP
 * Link aggregatie → 2 kabels laten samenwerken
+
+
+# ACL
+
+* onzichtbare laatste regel, deny any
+
+## Wat is een ACE?
+
+* ACE = Access Control Entry → één enkele regel in een ACL
+* Elke ACL bestaat uit één of meerdere ACE's
+* Volgorde is belangrijk: de eerste match wint
+
+## Wat is een Wildcard Mask?
+  
+* Omgekeerde van een subnetmask
+* `0` = moet matchen, `1` = maakt niet uit
+* Voorbeeld: subnetmask `255.255.255.0` → wildcard mask `0.0.0.255`
+* Berekening: `255.255.255.255 - subnetmask = wildcard mask`
+
+## Voorbeeld: heel het netwerk van PC-C blokkeren (/24)
+
+PC-C zit in `192.168.30.0/24` → wildcard mask = `0.0.0.255`
+
+### Voor (alleen host blokkeren)
+
+```
+access-list 1 deny host 192.168.30.3
+access-list 1 permit any
+```
+
+Toont als:
+
+```
+10 deny host 192.168.30.3
+20 permit any
+```
+
+### Na (heel het /24 netwerk blokkeren)
+
+```
+access-list 1 deny 192.168.30.0 0.0.0.255
+access-list 1 permit any
+```
+
+Toont als:
+
+```
+10 deny 192.168.30.0 0.0.0.255
+20 permit any
+```
+
+* `host 192.168.30.3` → veranderd naar `192.168.30.0 0.0.0.255`
+* Zo worden alle adressen van `192.168.30.0` tot `192.168.30.255` geblokkeerd

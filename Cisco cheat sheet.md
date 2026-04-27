@@ -103,6 +103,20 @@
 7. Router(config)#```interface g0/0/0```
 8. Router(config-if)#```no shutdown```
 
+### Access list
+
+1. Router(config)#```ip access-list standard <naam>```
+2. Router(config-std-nacl)#```permit 192.168.10.0 0.0.0.255```
+3. Router(config-std-nacl)#```permit 192.168.20.0 0.0.0.255```
+4. Router#```show access-lists```
+5. Router(config)#```interface g0/0/0```
+6. Router(config-if)#```ip access-group <naam> out```
+
+### Andere ACL regels (extended)
+
+- Router(config-ext-nacl)#```permit icmp 172.22.34.96 0.0.0.15 host 172.22.34.62```
+- Router(config-ext-nacl)#```permit tcp 172.22.34.96 0.0.0.15 host 172.22.34.62 eq www```
+- Router(config-ext-nacl)#```deny udp any 10.0.0.0 0.0.0.255 lt 1000```
 
 # ipv6
 

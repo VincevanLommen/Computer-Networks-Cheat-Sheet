@@ -235,3 +235,54 @@ Switch: F0/9      → switchport access vlan 20 (naar PC)
 ## PC-kant
 - beide gevallen: ```ipv6 autoconfig``` (in Packet Tracer)
 - Windows: ```ipconfig /release6``` en ```ipconfig /renew6``` om te vernieuwen
+
+---
+
+# Access List (ACL)
+
+## Wat is een ACL?
+- een ACL filtert verkeer op een router interface
+- je bepaalt welk verkeer door mag (permit) of geblokkeerd wordt (deny)
+- standard ACL = filtert alleen op source IP
+- extended ACL = filtert op source IP, destination IP, protocol, poort
+- er is altijd een onzichtbare laatste regel: **deny any** (alles wat niet matcht wordt gedropt)
+
+## ```ip access-list standard <naam>```
+- maakt een named standard ACL aan
+- standard = filtert alleen op bron-adres
+- `<naam>` = vrij te kiezen naam (bv BLOCK-LAN)
+
+## ```permit 192.168.10.0 0.0.0.255```
+- laat al het verkeer toe van het netwerk 192.168.10.0/24
+- 0.0.0.255 = wildcard mask (omgekeerde van subnetmask)
+- wildcard berekening: 255.255.255.255 - 255.255.255.0 = 0.0.0.255
+
+## ```show access-lists```
+- toont alle ACLs en hun regels
+- toont ook het regelnummer (10, 20, 30...) en het aantal matches
+
+## ```interface g0/0/0```
+- selecteert de interface waarop je de ACL wilt toepassen
+- standard ACL → plaats zo dicht mogelijk bij de **bestemming**
+
+## ```ip access-group <naam> out```
+- past de ACL toe op de interface
+- `out` = filtert verkeer dat de interface UIT gaat
+- `in` = filtert verkeer dat de interface IN komt
+- per interface max 1 ACL per richting (in/out)
+
+## Andere regels (extended ACL)
+
+### ```permit icmp 172.22.34.96 0.0.0.15 host 172.22.34.62```
+- laat ICMP (ping) toe van 172.22.34.96/28 naar host 172.22.34.62
+- 0.0.0.15 = wildcard voor /28 (16 adressen)
+
+### ```permit tcp 172.22.34.96 0.0.0.15 host 172.22.34.62 eq www```
+- laat TCP verkeer toe naar poort 80 (www)
+- eq www = equal to port 80
+- alleen webverkeer wordt toegelaten
+
+### ```deny udp any 10.0.0.0 0.0.0.255 lt 1000```
+- blokkeer UDP verkeer van overal naar 10.0.0.0/24
+- lt 1000 = less than port 1000 (poorten 0-999)
+- any = elk bronadres
