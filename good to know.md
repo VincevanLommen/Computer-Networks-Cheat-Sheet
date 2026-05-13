@@ -5,6 +5,9 @@
 * Fe:80 is link local
 * 2000 global unicast
 * VTY → SSH
+* Loopback interface → ip toekennen aan router om te pingen, ssh
+* Seriele interface PtP max 1 router
+
 # Subnetten berekenen
 
 ## Voorbeeld
@@ -124,6 +127,7 @@ Hostadres: `10.5.19.67/23` → 32 - 23 = **9 host-bits**
 # ACL
 
 * onzichtbare laatste regel, deny any
+* Ook source poort
 
 ## Wat is een ACE?
 
@@ -172,3 +176,129 @@ Toont als:
 
 * `host 192.168.30.3` → veranderd naar `192.168.30.0 0.0.0.255`
 * Zo worden alle adressen van `192.168.30.0` tot `192.168.30.255` geblokkeerd
+
+## NAT network adress translation
+
+* PAT → Port adress translation
+* Hoe weet je als je nat hebt? → Lokaal ip naar publiek
+
+### Piravate ip
+- 192.168.
+- 10.
+- 172.16 - 172-31
+- LLA vs GUA niet hetzelfde → LLA wordt niet gerouteerd
+- TCP poort is random getal
+- PAT = NAT overload
+- 
+
+
+### Teminilogie
+* Inside adress → prive ip dat verteaald word (client)
+* Outside adress → het adress van de "Peer" (server)
+* Local adress → adress in de pakket aan de inside van de nat router
+* global adress → Adressen buiten de NAT
+
+
+
+
+### static NAT
+* Vaste tabel met vertalingen
+* Evenveel interne als externe ip adressen
+* niets met poorten
+
+### Dynamic NAT zonder overload
+* vast aantal externe adressen, maar minder dan interne
+* "On the fly" wordt interne adres toegelaten
+* op is op
+* niets met poorten
+
+### Dynamic met overload
+  
+
+## Eigenschap nat
+
+| Eigenschap                                              | STAT (Static NAT) | DYN (Dynamic NAT) | PAT (Port Address Translation)   |
+|---------------------------------------------------------|-------------------|--------------------|---------------------------------|
+| Is symmetrisch / bidirectioneel                         | ✔️                | Discuteerbaar      | ❌                             |
+| Server draaien op private IPv4, bereikbaar vanop internet | ✔️              | ❌               | ❌                                |
+| TCP-verbindingen van buiten naar binnen zijn mogelijk   | ✔️                | ❌                 | ❌                             |
+| NAT‑tabel verandert tijdens de werking                  | ❌                | ✔️                 | ✔️                             |
+| Er kan een pool van publieke adressen gebruikt worden   | ❌                | ✔️                 | ❌ (meestal 1 publiek IP)      |
+| 1‑op‑1 mapping tussen private en publieke adressen      | ✔️                | Discuteerbaar      | ❌                             |
+| Meerdere interne hosts delen hetzelfde publiek IP       | ❌                | ❌                 | ✔️                             |
+
+* Door een nat lijken het dat er meerdere adressen op 1 interface hangen
+  
+
+* Testen kan met GNS3, imadge van CISCO
+
+# OSPF
+
+## 1. Wat doet een IGP routing protocol? (2 aspecten)
+
+* **Aspect 1:** Ontdekt en leert dynamisch alle routes naar andere netwerken
+* **Aspect 2:** Berekent de beste/kortste pad naar een bestemming
+* Plaatst deze ook in routing tabel
+
+## 2. Welke 2 grote soorten/families IGP routing protocollen?
+
+* **Distance Vector** (DV) → bv. RIPv1, RIPv2
+* **Link State** (LS) → bv. OSPF, IS-IS
+* Verschil? link state kent heel het netwerk, andere enkel next hop
+  
+
+## 3. Wat is het belangrijkste verschil tussen deze 2 families?
+
+| Aspect | Distance Vector | Link State |
+|--------|-----------------|-----------|
+| Wat sturen | Routingtabel van zichzelf | Topologie van héle netwerk |
+| Updates | Periodiek naar buren | Alleen wijzigingen |
+| Snelheid convergentie | Traag | Snel |
+| CPU/geheugen | Laag | Hoog |
+| Basisberekening | Bellman-Ford | Dijkstra's algoritme |
+
+## 4. Bij welke familie hoort OSPF?
+
+* **Link State** familie
+* Stuurt de volledige netwerktopologie door
+
+## 5. Waarvoor staat de "O" in OSPF?
+
+* **Open** → Niet eigendom van één fabrikant (open standard)
+* Daarom kan het op veel verschillende switches/routers gebruikt worden
+
+## 6. Waarvoor staat de "SPF"? En wat betekent het?
+
+* **SPF** = Shortest Path First
+* Het betekent dat OSPF de **kortste route** naar elke bestemming berekent
+* Gebruikt **Dijkstra's algoritme** voor deze berekening
+* Gebaseerd op **kostfactor** (cost), niet aantal hops
+
+## 7. Hoe herken ik in de Cisco routing table een OSPF-Route?
+
+* In routing table prefix: **O** of **O IA** (Inter-Area)
+* Voorbeeld output:
+```
+O    192.168.1.0/24 [110/100] via 10.0.0.1, 00:05:32, GigabitEthernet0/0
+```
+  * **O** = OSPF Route
+  * **110** = AD (Administrative Distance)
+  * **100** = Kostfactor (metric)
+  * **via 10.0.0.1** = Next hop router
+
+
+
+
+* OSPFv2 heeft geen transportlaag
+
+### 2 OSPF getallen nodig
+1. OSPF process id
+2. OSPF area (meestal 0)
+
+
+* Op elke router aangeven welke interfaces meespelen
+  
+### Cost
+* sneltse route vinden
+* cost formule : referentie-bitrate/ bitrate
+* Formule aapassen

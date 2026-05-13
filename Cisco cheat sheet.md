@@ -38,6 +38,18 @@
 ### Default route
 1. R1(config)#```ip route 0.0.0.0 0.0.0.0 NEXT_HOP_IP```
 
+### Loopback
+1. (config)# loopback
+
+### ROuter id
+1. R1(config-router)#```router-id 1.1.1.1```
+
+### Cost
+cost op interface
+1. (config-if)#```ip ospf cost 123```
+
+referaentie-bitrate aanpassen
+1. (config-router)#```auto-cost referebce-bandwidth [snelheid in mb/s]```
 
 ## Switch
 1. Switch>```enable```
@@ -117,6 +129,10 @@
 - Router(config-ext-nacl)#```permit icmp 172.22.34.96 0.0.0.15 host 172.22.34.62```
 - Router(config-ext-nacl)#```permit tcp 172.22.34.96 0.0.0.15 host 172.22.34.62 eq www```
 - Router(config-ext-nacl)#```deny udp any 10.0.0.0 0.0.0.255 lt 1000```
+
+
+### NAT en PAT
+- ip nat inside source [static] ... [overload] 
 
 # ipv6
 
