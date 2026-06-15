@@ -29,6 +29,13 @@
 * IPv4 Autoconfig
 * ...
 
+## [IP Calculator](ip-calculator.html)
+* IPv4-adresanalyse
+* subnet planning
+* IPv6-adresanalyse
+* wildcard mask en link-local checks
+* binair / decimaal / hexadecimaal conversie
+
 ## [Security](Security.md)
 
 ## [Examenvoorbeeld](voorbeeld.md)
