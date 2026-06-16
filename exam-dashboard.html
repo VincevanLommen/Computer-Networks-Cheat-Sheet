@@ -127,6 +127,20 @@
     </section>
 
     <section class="card">
+      <h2>4b. Standard → Extended ACL converter</h2>
+      <div class="grid">
+        <label>Actie<select id="convAction"><option value="permit">permit</option><option value="deny">deny</option></select></label>
+        <label>Source Netwerk<input id="convSourceNet" value="192.168.13.0" /></label>
+        <label>Wildcard mask<input id="convWildcard" value="0.0.0.255" /></label>
+        <label>Protocol<select id="convProtocol"><option value="ip">ip (all)</option><option value="icmp">icmp</option><option value="tcp">tcp</option><option value="udp">udp</option></select></label>
+        <label>Destination (optioneel)<input id="convDest" value="any" placeholder="any of specifiek adres" /></label>
+        <label>Poort (optioneel)<input id="convDestPort" placeholder="80, eq 443, etc." /></label>
+        <button id="convBtn">Converteer naar Extended ACL</button>
+      </div>
+      <div id="convResult" class="result"></div>
+    </section>
+
+    <section class="card">
       <h2>5. Router-on-a-stick helper</h2>
       <div class="grid">
         <label>VLAN ID<input id="rostVlan" value="10" /></label>
@@ -302,6 +316,38 @@ IP-adres: ${address}\nPrefix: /${prefix}\nSubnetmask: ${mask}\nWildcard mask: ${
       }
     }
 
+    function convertAcl() {
+      try {
+        const action = document.getElementById('convAction').value;
+        const sourceNet = document.getElementById('convSourceNet').value.trim();
+        const wildcard = document.getElementById('convWildcard').value.trim();
+        const protocol = document.getElementById('convProtocol').value;
+        const dest = document.getElementById('convDest').value.trim() || 'any';
+        const port = document.getElementById('convDestPort').value.trim();
+
+        // Valideer wildcardmask
+        const wildcardParts = wildcard.split('.');
+        if (wildcardParts.length !== 4 || wildcardParts.some(p => isNaN(p) || p < 0 || p > 255)) {
+          throw new Error('Ongeldig wildcard mask');
+        }
+
+        // Bouw extended ACL regel
+        let line = `Router(config)# access-list <num> ${action} ${protocol} ${sourceNet} ${wildcard} ${dest}`;
+
+        if (port) {
+          line = `Router(config)# access-list <num> ${action} ${protocol} ${sourceNet} ${wildcard} ${dest} ${port}`;
+        }
+
+        // Toon standaard en extended versie
+        const standard = `Standard ACL:\n  ${action} ${sourceNet} ${wildcard}`;
+        const extended = `Extended ACL:\n  ${line}`;
+
+        document.getElementById('convResult').innerHTML = `${standard}\n\n${extended}\n\nOpmerking: <num> vervangen door ACL-nummer (100-199 of 2000-2699 voor named)`;
+      } catch (error) {
+        document.getElementById('convResult').innerHTML = 'Fout: ' + error.message;
+      }
+    }
+
     function generateRouterOnStick() {
       try {
         const vlan = document.getElementById('rostVlan').value.trim();
@@ -447,6 +493,7 @@ IP-adres: ${address}\nPrefix: /${prefix}\nSubnetmask: ${mask}\nWildcard mask: ${
     document.getElementById('vlanBtn').addEventListener('click', generateVlanConfig);
     document.getElementById('dhcpBtn').addEventListener('click', generateDhcpConfig);
     document.getElementById('aclBtn').addEventListener('click', generateAcl);
+    document.getElementById('convBtn').addEventListener('click', convertAcl);
     document.getElementById('rostBtn').addEventListener('click', generateRouterOnStick);
     document.getElementById('staticRouteBtn').addEventListener('click', generateStaticRoute);
     document.getElementById('swPortBtn').addEventListener('click', generateSwitchPort);
@@ -458,6 +505,7 @@ IP-adres: ${address}\nPrefix: /${prefix}\nSubnetmask: ${mask}\nWildcard mask: ${
     generateVlanConfig();
     generateDhcpConfig();
     generateAcl();
+    convertAcl();
     generateRouterOnStick();
     generateStaticRoute();
     generateSwitchPort();
