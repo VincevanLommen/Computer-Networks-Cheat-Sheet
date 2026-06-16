@@ -158,9 +158,53 @@ Hostadres: `10.5.19.67/23` → 32 - 23 = **9 host-bits**
 
 # IPv6
 
-* SLAAC(-only)
-* SLAAC + statless DHCPv6
-* statefull DHCPv6
+## 3 manieren om een IPv6-adres te krijgen
+
+### 1. SLAAC-only
+
+- De PC maakt zelf een IPv6-adres aan
+- De router stuurt het **prefix** via Router Advertisements
+- DNS-server ook via RA
+- **Geen DHCPv6** nodig
+- **Stateless** = geen server die "onthoud" welk adres gegeven is
+
+### 2. SLAAC + Stateless DHCPv6
+
+- PC maakt zelf een IPv6-adres aan via SLAAC
+- Maar de router zet de **O-flag** (other-config-flag)
+- Dit zegt: "haal aanvullende info (DNS, domain-name) op via DHCPv6"
+- De DNS-server en domain-name komen van een **stateless DHCPv6 server**
+- **Stateless** = de server onthoudt NIET welk adres gegeven is (geen lease-management)
+
+### 3. Stateful DHCPv6
+
+- De PC vraagt alles via DHCPv6, inclusief het IPv6-adres
+- De router stuurt GEEN prefix via RA
+- **Stateful** = de server onthoudt welk adres gegeven is en hoe lang de lease duurt
+- Werkt eigenlijk als IPv4 DHCP, maar dan voor IPv6
+
+## Vergelijking stateless vs stateful
+
+| Aspect | Stateless DHCPv6 | Stateful DHCPv6 |
+|--------|------------------|-----------------|
+| **Wie geeft het IPv6-adres?** | PC zelf (via SLAAC) | DHCPv6-server |
+| **Wat geeft DHCPv6?** | Alleen DNS + domain-name | Alles (adres, DNS, domain-name) |
+| **Server onthoudt adrestoewijzingen?** | Nee | Ja (met lease-time) |
+| **Vergelijkbaar met IPv4?** | Nee, uniek voor IPv6 | Ja, net als IPv4 DHCP |
+| **Schakelt de router O-flag in?** | Ja (other-config-flag) | Nee, router zet M-flag |
+| **Commando op router** | `ipv6 nd other-config-flag` | `ipv6 nd managed-config-flag` |
+| **Complexiteit** | Gemiddeld | Meer management nodig |
+
+## De vlaggen uitgelegd
+
+- **O-flag** (other-config-flag) = "Haal aanvullende info op via DHCPv6" (stateless)
+- **M-flag** (managed-config-flag) = "Haal alles op via DHCPv6" (stateful)
+- **A-flag** (autonomous) = "Gebruik dit prefix voor SLAAC"
+
+## Wanneer welke gebruiken?
+
+- **Stateless** = makkelijk, weinig overhead, meestal prima
+- **Stateful** = als je strict wilt zien wie welk adres heeft (logging, audit)
 
 # protocollen
 
@@ -170,7 +214,7 @@ Hostadres: `10.5.19.67/23` → 32 - 23 = **9 host-bits**
 * RA/RS
 * A vlag → stateless
 
-* Met dad checken als zijn IPv6 adress uniek is
+* Met DAD (Duplicate Address Detection) checken of zijn IPv6 adres uniek is
 
 
 
