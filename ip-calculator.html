@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IP Calculator voor Computer Networks</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --border: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --danger: #fb7185;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--bg), #020617);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2rem; }
+    .intro { color: var(--muted); margin-bottom: 24px; }
+    .card {
+      background: rgba(17,24,39,0.92);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      margin-bottom: 20px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; align-items: end; }
+    label { display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 0.95rem; }
+    input, button, select {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    button {
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), #2563eb);
+      border: none;
+      font-weight: 600;
+    }
+    button.secondary {
+      background: linear-gradient(135deg, var(--accent-2), #15803d);
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .result-item {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .result-item strong { display: block; color: var(--accent); margin-bottom: 6px; }
+    .result-item .value { font-size: 1rem; word-break: break-all; }
+    .hint { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
+    .tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(56,189,248,0.15);
+      color: var(--accent);
+      font-size: 0.85rem;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .error { color: var(--danger); margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; }
+    th { color: var(--accent); }
+    @media (max-width: 700px) {
+      .container { padding: 16px; }
+      h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>IP Calculator voor Computer Networks</h1>
+    <p class="intro">Bereken IPv4- en IPv6-netwerkgegevens, subnetten, wildcard masks en link-local informatie vanuit één tool.</p>
+
+    <section class="card">
+      <h2>IPv4-adres analyseren</h2>
+      <div class="grid">
+        <label>
+          IPv4-adres
+          <input id="ipv4Address" value="192.168.10.50" />
+        </label>
+        <label>
+          Prefix of subnetmask
+          <input id="ipv4Prefix" value="24" placeholder="24 of 255.255.255.0" />
+        </label>
+        <button id="calcIpv4">Bereken IPv4</button>
+      </div>
+      <div id="ipv4Results"></div>
+    </section>
+
+    <section class="card">
+      <h2>IPv4 subnet planner</h2>
+      <div class="grid">
+        <label>
+          Basisnetwerk
+          <input id="subnetBase" value="172.16.0.0" />
+        </label>
+        <label>
+          Basis prefix
+          <input id="subnetBasePrefix" value="16" />
+        </label>
+        <label>
+          Gewenste subnet prefix
+          <input id="subnetTargetPrefix" value="21" />
+        </label>
+        <button id="calcSubnets" class="secondary">Bereken subnetten</button>
+      </div>
+      <div id="subnetResults"></div>
+    </section>
+
+    <section class="card">
+      <h2>IPv6-adres analyseren</h2>
+      <div class="grid">
+        <label>
+          IPv6-adres
+          <input id="ipv6Address" value="2001:db8:1::1" />
+        </label>
+        <label>
+          Prefixlengte
+          <input id="ipv6Prefix" value="64" />
+        </label>
+        <button id="calcIpv6">Bereken IPv6</button>
+      </div>
+      <div id="ipv6Results"></div>
+    </section>
+
+    <section class="card">
+      <h2>Binair / decimaal / hexadecimaal</h2>
+      <div class="grid">
+        <label>
+          Waarde
+          <input id="baseValue" value="255" />
+        </label>
+        <label>
+          Bronbasis
+          <select id="baseFrom">
+            <option value="2">Binair</option>
+            <option value="10" selected>Decimaal</option>
+            <option value="16">Hexadecimaal</option>
+          </select>
+        </label>
+        <button id="convertBase">Converteer</button>
+      </div>
+      <div id="baseResults"></div>
+    </section>
+  </main>
+
+  <script>
+    const ipv4AddressInput = document.getElementById('ipv4Address');
+    const ipv4PrefixInput = document.getElementById('ipv4Prefix');
+    const subnetBaseInput = document.getElementById('subnetBase');
+    const subnetBasePrefixInput = document.getElementById('subnetBasePrefix');
+    const subnetTargetPrefixInput = document.getElementById('subnetTargetPrefix');
+    const ipv6AddressInput = document.getElementById('ipv6Address');
+    const ipv6PrefixInput = document.getElementById('ipv6Prefix');
+
+    function toDottedIPv4(value) {
+      return value.split('.').map(part => Number(part).toString()).join('.');
+    }
+
+    function ipv4ToInt(address) {
+      const octets = address.split('.').map(Number);
+      if (octets.length !== 4 || octets.some(o => Number.isNaN(o) || o < 0 || o > 255)) {
+        throw new Error('Ongeldig IPv4-adres');
+      }
+      return ((octets[0] << 24) >>> 0) + ((octets[1] << 16) >>> 0) + ((octets[2] << 8) >>> 0) + octets[3];
+    }
+
+    function intToIPv4(value) {
+      return [
+        (value >>> 24) & 255,
+        (value >>> 16) & 255,
+        (value >>> 8) & 255,
+        value & 255
+      ].join('.');
+    }
+
+    function ipv4ToBinary(address) {
+      return address.split('.').map(part => Number(part).toString(2).padStart(8, '0')).join('.');
+    }
+
+    function maskFromPrefix(prefix) {
+      if (prefix < 0 || prefix > 32) throw new Error('Prefix moet tussen 0 en 32 liggen');
+      if (prefix === 0) return 0;
+      return ((0xffffffff << (32 - prefix)) >>> 0);
+    }
+
+    function prefixFromMask(mask) {
+      const octets = mask.split('.').map(Number);
+      if (octets.length !== 4 || octets.some(o => Number.isNaN(o) || o < 0 || o > 255)) {
+        throw new Error('Ongeldige subnetmask');
+      }
+      const bits = octets.map(o => o.toString(2).padStart(8, '0')).join('');
+      const prefix = bits.indexOf('0');
+      return prefix === -1 ? 32 : prefix;
+    }
+
+    function parsePrefixValue(value) {
+      const trimmed = (value || '').trim();
+      if (!trimmed) return 24;
+      if (trimmed.startsWith('/')) return parsePrefixValue(trimmed.slice(1));
+      if (/^\d+$/.test(trimmed)) {
+        const prefix = Number(trimmed);
+        if (prefix < 0 || prefix > 32) throw new Error('Prefix moet tussen 0 en 32 liggen');
+        return prefix;
+      }
+      if (/^\d+\.\d+\.\d+\.\d+$/.test(trimmed)) {
+        return prefixFromMask(trimmed);
+      }
+      throw new Error('Gebruik een prefix zoals 24 of een subnetmask zoals 255.255.255.0');
+    }
+
+    function getNetworkAddress(ip, prefix) {
+      const mask = maskFromPrefix(prefix);
+      return intToIPv4(ipv4ToInt(ip) & mask);
+    }
+
+    function getBroadcastAddress(ip, prefix) {
+      const mask = maskFromPrefix(prefix);
+      const network = ipv4ToInt(ip) & mask;
+      return intToIPv4(network | (~mask >>> 0));
+    }
+
+    function getWildcardMask(prefix) {
+      return intToIPv4((~maskFromPrefix(prefix)) >>> 0);
+    }
+
+    function getHostRange(network, prefix) {
+      const networkInt = ipv4ToInt(network);
+      const broadcastInt = ipv4ToInt(getBroadcastAddress(network, prefix));
+      if (prefix === 32) return { first: network, last: network, usable: 1 };
+      if (prefix === 31) return { first: network, last: getBroadcastAddress(network, prefix), usable: 2 };
+      return {
+        first: intToIPv4(networkInt + 1),
+        last: intToIPv4(broadcastInt - 1),
+        usable: Math.max(0, broadcastInt - networkInt - 1)
+      };
+    }
+
+    function getAddressClass(address) {
+      const octet = ipv4ToInt(address) >>> 24;
+      if (octet <= 127) return 'A';
+      if (octet <= 191) return 'B';
+      if (octet <= 223) return 'C';
+      if (octet <= 239) return 'D';
+      return 'E';
+    }
+
+    function isPrivateIPv4(address) {
+      const octets = address.split('.').map(Number);
+      if (octets[0] === 10) return true;
+      if (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31) return true;
+      if (octets[0] === 192 && octets[1] === 168) return true;
+      return false;
+    }
+
+    function renderResult(containerId, html) {
+      document.getElementById(containerId).innerHTML = html;
+    }
+
+    function calculateIPv4() {
+      const address = ipv4AddressInput.value.trim();
+      const prefixValue = ipv4PrefixInput.value.trim();
+      try {
+        const prefix = parsePrefixValue(prefixValue);
+        const addressNumber = ipv4ToInt(address);
+        const mask = maskFromPrefix(prefix);
+        const network = intToIPv4(addressNumber & mask);
+        const broadcast = intToIPv4((addressNumber & mask) | (~mask >>> 0));
+        const wildcard = getWildcardMask(prefix);
+        const hostRange = getHostRange(network, prefix);
+        const hostBits = 32 - prefix;
+        const className = getAddressClass(address);
+        const privateTag = isPrivateIPv4(address) ? '<span class="tag">Private</span>' : '<span class="tag">Publiek</span>';
+
+        renderResult('ipv4Results', `
+          <div class="result-grid">
+            <div class="result-item"><strong>Adres</strong><div class="value">${address}</div></div>
+            <div class="result-item"><strong>Prefix</strong><div class="value">/${prefix}</div></div>
+            <div class="result-item"><strong>Subnetmask</strong><div class="value">${intToIPv4(mask)}</div></div>
+            <div class="result-item"><strong>Wildcard mask</strong><div class="value">${wildcard}</div></div>
+            <div class="result-item"><strong>Netwerkadres</strong><div class="value">${network}</div></div>
+            <div class="result-item"><strong>Broadcastadres</strong><div class="value">${broadcast}</div></div>
+            <div class="result-item"><strong>Hostbereik</strong><div class="value">${hostRange.first} - ${hostRange.last}</div></div>
+            <div class="result-item"><strong>Gebruikelijke hosts</strong><div class="value">${hostRange.usable}</div></div>
+          </div>
+          <div class="hint">
+            ${privateTag}
+            <span class="tag">Klasse ${className}</span>
+            <span class="tag">${hostBits} host bits</span>
+          </div>
+          <div class="hint">Binair: ${ipv4ToBinary(address)}</div>
+        `);
+      } catch (error) {
+        renderResult('ipv4Results', `<div class="error">${error.message}</div>`);
+      }
+    }
+
+    function calculateSubnets() {
+      const baseNetwork = subnetBaseInput.value.trim();
+      const basePrefix = Number(subnetBasePrefixInput.value);
+      const targetPrefix = Number(subnetTargetPrefixInput.value);
+      try {
+        const baseInt = ipv4ToInt(baseNetwork);
+        const maskBase = maskFromPrefix(basePrefix);
+        const networkBase = intToIPv4(baseInt & maskBase);
+        if (targetPrefix <= basePrefix || targetPrefix > 32) {
+          throw new Error('Doelprefix moet groter zijn dan basisprefix en maximaal /32');
+        }
+        const subnetCount = 2 ** (targetPrefix - basePrefix);
+        const blockSize = 2 ** (32 - targetPrefix);
+        const usablePerSubnet = targetPrefix === 31 ? 2 : Math.max(0, blockSize - 2);
+        const networks = [];
+        for (let i = 0; i < Math.min(6, subnetCount); i += 1) {
+          const subnetNetwork = intToIPv4((ipv4ToInt(networkBase) + (i * blockSize)) >>> 0);
+          networks.push(subnetNetwork + '/' + targetPrefix);
+        }
+        renderResult('subnetResults', `
+          <div class="result-grid">
+            <div class="result-item"><strong>Aantal subnetten</strong><div class="value">${subnetCount}</div></div>
+            <div class="result-item"><strong>Adres per subnet</strong><div class="value">${blockSize}</div></div>
+            <div class="result-item"><strong>Gebruikelijke hosts per subnet</strong><div class="value">${usablePerSubnet}</div></div>
+            <div class="result-item"><strong>Subnetmask</strong><div class="value">${intToIPv4(maskFromPrefix(targetPrefix))}</div></div>
+          </div>
+          <table>
+            <thead><tr><th>Voorbeeld subnetten</th></tr></thead>
+            <tbody>
+              ${networks.map(item => `<tr><td>${item}</td></tr>`).join('')}
+            </tbody>
+          </table>
+        `);
+      } catch (error) {
+        renderResult('subnetResults', `<div class="error">${error.message}</div>`);
+      }
+    }
+
+    function parseIPv6(address) {
+      const normalized = address.trim().toLowerCase();
+      if (!normalized) throw new Error('IPv6-adres is verplicht');
+      const parts = normalized.split('::');
+      if (parts.length > 2) throw new Error('Ongeldig IPv6-adres');
+      const left = parts[0] ? parts[0].split(':') : [];
+      const right = parts[1] ? parts[1].split(':') : [];
+      const missing = 8 - (left.length + right.length);
+      if (missing < 0) throw new Error('Ongeldig IPv6-adres');
+      const groups = [...left, ...Array(missing).fill('0'), ...right];
+      if (groups.length !== 8) throw new Error('Ongeldig IPv6-adres');
+      return groups.map(group => {
+        if (!group) return 0;
+        const value = Number.parseInt(group, 16);
+        if (Number.isNaN(value) || value < 0 || value > 0xffff) throw new Error('Ongeldig IPv6-adres');
+        return value;
+      });
+    }
+
+    function compressIPv6(hextets) {
+      const parts = hextets.map(v => v.toString(16));
+      let bestStart = -1;
+      let bestLength = 0;
+      let start = -1;
+      let length = 0;
+      for (let i = 0; i < parts.length; i += 1) {
+        if (parts[i] === '0') {
+          if (start === -1) start = i;
+          length += 1;
+        } else {
+          if (length > bestLength) {
+            bestStart = start;
+            bestLength = length;
+          }
+          start = -1;
+          length = 0;
+        }
+      }
+      if (length > bestLength) {
+        bestStart = start;
+        bestLength = length;
+      }
+      if (bestLength >= 2) {
+        const left = parts.slice(0, bestStart).join(':');
+        const right = parts.slice(bestStart + bestLength).join(':');
+        return (left ? left + ':' : '') + '::' + (right ? right : '');
+      }
+      return parts.join(':');
+    }
+
+    function ipv6ToBigInt(hextets) {
+      let value = 0n;
+      for (const hextet of hextets) {
+        value = (value << 16n) | BigInt(hextet);
+      }
+      return value;
+    }
+
+    function bigIntToIPv6(value) {
+      let hextets = [];
+      for (let i = 0; i < 8; i += 1) {
+        hextets.unshift(Number(value & 0xffffn));
+        value >>= 16n;
+      }
+      return compressIPv6(hextets);
+    }
+
+    function getIPv6PrefixAddress(hextets, prefix) {
+      const value = ipv6ToBigInt(hextets);
+      if (prefix === 0) return '::';
+      const mask = ((1n << BigInt(prefix)) - 1n) << BigInt(128 - prefix);
+      return bigIntToIPv6(value & mask);
+    }
+
+    function getIPv6HostPart(hextets, prefix) {
+      const value = ipv6ToBigInt(hextets);
+      if (prefix === 0) return '::';
+      const mask = ((1n << BigInt(128 - prefix)) - 1n);
+      return bigIntToIPv6(value & mask);
+    }
+
+    function isLinkLocalIPv6(hextets) {
+      return (hextets[0] & 0xffc0) === 0xfe80;
+    }
+
+    function getIPv6Type(hextets) {
+      if (isLinkLocalIPv6(hextets)) return 'Link-local';
+      if (hextets[0] >= 0x2000 && hextets[0] <= 0x3fff) return 'Global unicast';
+      if (hextets[0] >= 0xfc00 && hextets[0] <= 0xfdff) return 'Unique local';
+      return 'Ander/privé';
+    }
+
+    function calculateIPv6() {
+      const address = ipv6AddressInput.value.trim();
+      const prefixValue = Number(ipv6PrefixInput.value);
+      try {
+        const hextets = parseIPv6(address);
+        if (!Number.isInteger(prefixValue) || prefixValue < 0 || prefixValue > 128) {
+          throw new Error('Prefixlengte moet tussen 0 en 128 liggen');
+        }
+        const prefixAddress = getIPv6PrefixAddress(hextets, prefixValue);
+        const hostPart = getIPv6HostPart(hextets, prefixValue);
+        const compressed = compressIPv6(hextets);
+        renderResult('ipv6Results', `
+          <div class="result-grid">
+            <div class="result-item"><strong>Adres</strong><div class="value">${compressed}</div></div>
+            <div class="result-item"><strong>Prefix</strong><div class="value">/${prefixValue}</div></div>
+            <div class="result-item"><strong>Type</strong><div class="value">${getIPv6Type(hextets)}</div></div>
+            <div class="result-item"><strong>Network prefix</strong><div class="value">${prefixAddress}/${prefixValue}</div></div>
+            <div class="result-item"><strong>Host/deel</strong><div class="value">${hostPart}</div></div>
+          </div>
+          <div class="hint">
+            ${isLinkLocalIPv6(hextets) ? '<span class="tag">fe80::/10 link-local</span>' : '<span class="tag">Geen link-local</span>'}
+            <span class="tag">${prefixValue} bits prefix</span>
+          </div>
+        `);
+      } catch (error) {
+        renderResult('ipv6Results', `<div class="error">${error.message}</div>`);
+      }
+    }
+
+    function parseBaseValue(value, fromBase) {
+      const trimmed = (value || '').trim();
+      if (!trimmed) throw new Error('Voer een waarde in');
+      const normalized = trimmed.toLowerCase();
+      if (fromBase === 2 && !/^[01]+$/.test(normalized)) throw new Error('Ongeldige binaire waarde');
+      if (fromBase === 10 && !/^\d+$/.test(normalized)) throw new Error('Ongeldige decimale waarde');
+      if (fromBase === 16 && !/^[0-9a-f]+$/.test(normalized)) throw new Error('Ongeldige hexadecimale waarde');
+      return Number.parseInt(normalized, fromBase);
+    }
+
+    function calculateBaseConversion() {
+      const value = document.getElementById('baseValue').value;
+      const fromBase = Number(document.getElementById('baseFrom').value);
+      try {
+        const decimalValue = parseBaseValue(value, fromBase);
+        const binary = decimalValue.toString(2);
+        const hex = decimalValue.toString(16).toUpperCase();
+        renderResult('baseResults', `
+          <div class="result-grid">
+            <div class="result-item"><strong>Decimaal</strong><div class="value">${decimalValue}</div></div>
+            <div class="result-item"><strong>Binair</strong><div class="value">${binary}</div></div>
+            <div class="result-item"><strong>Hexadecimaal</strong><div class="value">0x${hex}</div></div>
+          </div>
+          <div class="hint">Gebruik deze conversie voor octetten, subnetmask-bits en IPv6-hextets.</div>
+        `);
+      } catch (error) {
+        renderResult('baseResults', `<div class="error">${error.message}</div>`);
+      }
+    }
+
+    document.getElementById('calcIpv4').addEventListener('click', calculateIPv4);
+    document.getElementById('calcSubnets').addEventListener('click', calculateSubnets);
+    document.getElementById('calcIpv6').addEventListener('click', calculateIPv6);
+    document.getElementById('convertBase').addEventListener('click', calculateBaseConversion);
+
+    calculateIPv4();
+    calculateSubnets();
+    calculateIPv6();
+    calculateBaseConversion();
+  </script>
+</body>
+</html>
