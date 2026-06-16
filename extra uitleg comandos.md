@@ -109,6 +109,42 @@
 
 ---
 
+# LACP / EtherChannel
+
+## Wat is LACP?
+- LACP = Link Aggregation Control Protocol
+- het gebruikt meerdere fysieke poorten als één logische verbinding
+- handig voor meer bandbreedte en redundantie
+- in Cisco heet dit vaak **EtherChannel**
+
+## Waarom gebruik je LACP?
+- meerdere poorten samenwerken als één link
+- betere doorvoer tussen switches
+- fallback als één poort uitvalt
+
+## ```interface range g0/1 - 2```
+- selecteert meerdere poorten tegelijk
+- handig om dezelfde configuratie op meerdere interfaces toe te passen
+
+## ```channel-group 1 mode active```
+- maakt een EtherChannel aan met channel-group 1
+- `active` betekent dat de switch LACP actief start
+- de andere kant moet ook LACP ondersteunen (bijv. `active` of `passive`)
+
+## ```interface port-channel 1```
+- gaat naar de logische EtherChannel-interface
+- hier stel je settings in die gelden voor de hele bundel
+
+## ```show etherchannel summary```
+- toont of de poorten succesvol onderdeel zijn van de EtherChannel
+- je ziet de status van elke member poort
+
+## ```show interfaces port-channel 1```
+- toont details over de complete EtherChannel link
+- handig om te controleren of de bundle werkt
+
+---
+
 # Inter-VLAN routing (router-on-a-stick)
 
 ## Wat is inter-VLAN routing?

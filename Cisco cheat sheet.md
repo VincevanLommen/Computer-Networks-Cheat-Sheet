@@ -128,6 +128,18 @@
 
 - ```show interfaces trunk```
 
+### LACP / EtherChannel
+
+1. Switch(config)#```interface range g0/1 - 2```
+2. Switch(config-if-range)#```channel-group 1 mode active```
+3. Switch(config-if-range)#```switchport mode trunk```
+4. Switch(config-if-range)#```switchport trunk allowed vlan 10,20,30```
+5. Switch(config)#```interface port-channel 1```
+6. Switch(config-if)#```switchport mode trunk```
+7. Switch(config-if)#```switchport trunk allowed vlan 10,20,30```
+8. Switch#```show etherchannel summary```
+9. Switch#```show interfaces port-channel 1```
+
 ### Inter-VLAN routing (router-on-a-stick)
 
 1. Router(config)#```interface g0/0/0.10```
