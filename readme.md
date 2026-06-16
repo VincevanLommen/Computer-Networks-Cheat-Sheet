@@ -36,6 +36,14 @@
 * wildcard mask en link-local checks
 * binair / decimaal / hexadecimaal conversie
 
+## [Exam Dashboard](exam-dashboard.html)
+* subnet oefening
+* VLAN / inter-VLAN helper
+* DHCP-generator
+* ACL / wildcard helper
+* OSPF-routing herkenner
+* OSI / protocol flashcards
+
 ## [Security](Security.md)
 
 ## [Examenvoorbeeld](voorbeeld.md)

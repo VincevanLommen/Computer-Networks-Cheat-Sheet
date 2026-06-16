@@ -132,7 +132,27 @@ referaentie-bitrate aanpassen
 
 
 ### NAT en PAT
-- ip nat inside source [static] ... [overload] 
+
+#### Static NAT
+1. Router(config)#```interface g0/0/0```
+2. Router(config-if)#```ip nat inside```
+3. Router(config-if)#```exit```
+4. Router(config)#```interface g0/0/1```
+5. Router(config-if)#```ip nat outside```
+6. Router(config)#```ip nat inside source static 192.168.10.254 209.165.201.5```
+
+#### Dynamic NAT
+7. Router(config)#```ip nat pool MYPOOL 209.165.201.1 209.165.201.10 netmask 255.255.255.224```
+8. Router(config)#```access-list 1 permit 192.168.10.0 0.0.0.255```
+9. Router(config)#```ip nat inside source list 1 pool MYPOOL```
+
+#### PAT (overload)
+10. Router(config)#```ip nat inside source list 1 pool MYPOOL overload```
+
+#### NAT controleren
+11. Router#```show ip nat translations```
+12. Router#```show ip nat statistics```
+13. Router#```clear ip nat statistics```
 
 # ipv6
 

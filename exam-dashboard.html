@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Computer Networks Exam Dashboard</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #020617;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --border: #334155;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --warning: #f59e0b;
+      --danger: #fb7185;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--bg), #0f172a);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .container { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2rem; }
+    .intro { color: var(--muted); margin-bottom: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .card {
+      background: rgba(17,24,39,0.92);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 18px 30px rgba(0,0,0,0.25);
+    }
+    label { display: flex; flex-direction: column; gap: 6px; color: var(--muted); margin-bottom: 10px; }
+    input, select, button, textarea {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    button {
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), #2563eb);
+      border: none;
+      font-weight: 600;
+    }
+    button.secondary { background: linear-gradient(135deg, var(--accent-2), #15803d); }
+    button.warning { background: linear-gradient(135deg, var(--warning), #d97706); }
+    .result {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      white-space: pre-wrap;
+      line-height: 1.55;
+      color: #f8fafc;
+    }
+    .tag { display: inline-block; padding: 4px 8px; border-radius: 999px; background: rgba(56,189,248,0.15); color: var(--accent); margin-right: 6px; margin-bottom: 6px; font-size: 0.85rem; }
+    .muted { color: var(--muted); }
+    .small { font-size: 0.9rem; }
+    .pill-row { margin-top: 8px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Experimenteel examen-dashboard</h1>
+    <p class="intro">Een oefenbord met praktische voorbeelden uit de cheat sheets: IP, subnetten, VLAN, DHCP, ACL, OSPF en OSI.</p>
+
+    <section class="card">
+      <h2>1. IPv4-subnet oefening</h2>
+      <div class="grid">
+        <label>IPv4-adres<input id="ipAddr" value="192.168.10.50" /></label>
+        <label>Prefix / subnetmask<input id="ipPrefix" value="24" /></label>
+        <button id="calcIpBtn">Bereken</button>
+      </div>
+      <div id="ipResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>2. VLAN + inter-VLAN helper</h2>
+      <div class="grid">
+        <label>VLANs (komma gescheiden)<input id="vlansInput" value="10,20,30" /></label>
+        <label>Basis subnet<input id="vlanSubnet" value="10.0.10.0" /></label>
+        <label>Prefix<input id="vlanPrefix" value="24" /></label>
+        <button id="vlanBtn" class="secondary">Genereer configuratie</button>
+      </div>
+      <div id="vlanResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>3. DHCP-helper</h2>
+      <div class="grid">
+        <label>Netwerk<input id="dhcpNetwork" value="192.168.0.0" /></label>
+        <label>Prefix<input id="dhcpPrefix" value="24" /></label>
+        <label>Gateway<input id="dhcpGateway" value="192.168.0.1" /></label>
+        <label>DNS<input id="dhcpDns" value="8.8.8.8" /></label>
+        <label>Uitgesloten start<input id="dhcpExcludedStart" value="192.168.0.1" /></label>
+        <label>Uitgesloten eind<input id="dhcpExcludedEnd" value="192.168.0.10" /></label>
+        <button id="dhcpBtn">Genereer DHCP-commando's</button>
+      </div>
+      <div id="dhcpResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>4. ACL / wildcard helper</h2>
+      <div class="grid">
+        <label>Netwerk<input id="aclNetwork" value="192.168.10.0" /></label>
+        <label>Prefix<input id="aclPrefix" value="24" /></label>
+        <label>Actie<select id="aclAction"><option value="permit">permit</option><option value="deny">deny</option></select></label>
+        <label>Protocol<select id="aclProtocol"><option value="ip">ip</option><option value="icmp">icmp</option><option value="tcp">tcp</option><option value="udp">udp</option></select></label>
+        <label>Doelpoort (optioneel)<input id="aclPort" value="www" /></label>
+        <button id="aclBtn" class="warning">Genereer ACL-regel</button>
+      </div>
+      <div id="aclResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>5. Router-on-a-stick helper</h2>
+      <div class="grid">
+        <label>VLAN ID<input id="rostVlan" value="10" /></label>
+        <label>Subnet<input id="rostSubnet" value="10.0.10.0" /></label>
+        <label>Prefix<input id="rostPrefix" value="24" /></label>
+        <label>Router interface<input id="rostInterface" value="g0/0/0.10" /></label>
+        <button id="rostBtn" class="secondary">Genereer subinterface</button>
+      </div>
+      <div id="rostResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>6. Statische route helper</h2>
+      <div class="grid">
+        <label>Doelnetwerk<input id="routeNet" value="192.168.3.0" /></label>
+        <label>Prefix<input id="routePrefix" value="24" /></label>
+        <label>Next hop<input id="routeNextHop" value="10.0.0.2" /></label>
+        <label>Interface (optioneel)<input id="routeInterface" value="g0/0/1" /></label>
+        <button id="staticRouteBtn" class="warning">Genereer route</button>
+      </div>
+      <div id="staticRouteResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>7. Switchport helper</h2>
+      <div class="grid">
+        <label>Interface<input id="swPort" value="f0/11" /></label>
+        <label>Modus<select id="swMode"><option value="access">access</option><option value="trunk">trunk</option></select></label>
+        <label>VLAN<input id="swVlan" value="10" /></label>
+        <label>Native VLAN (trunk)<input id="swNativeVlan" value="99" /></label>
+        <label>Allowed VLANs<input id="swAllowedVlan" value="10,20,99" /></label>
+        <button id="swPortBtn">Genereer poortcommando's</button>
+      </div>
+      <div id="swPortResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>8. Security helper</h2>
+      <div class="grid">
+        <label>Type<select id="secType"><option value="dhcp-snooping">DHCP Snooping</option><option value="dai">DAI (ARP inspectie)</option><option value="bpduguard">BPDU Guard</option><option value="dtp">Disable DTP</option></select></label>
+        <label>VLAN(s)<input id="secVlan" value="10" /></label>
+        <label>Interface<input id="secInterface" value="g0/1" /></label>
+        <button id="secBtn" class="secondary">Genereer security commands</button>
+      </div>
+      <div id="secResult" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>9. OSPF / routing herkenner</h2>
+      <div class="two-col">
+        <div>
+          <label>Routingregel<input id="routeInput" value="O 192.168.3.0/24 [110/20] via 10.0.0.2, 00:00:10, GigabitEthernet0/0" /></label>
+          <button id="routeBtn">Classificeer</button>
+        </div>
+        <div id="routeResult" class="result"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>10. OSI / protocol flashcards</h2>
+      <div class="grid">
+        <label>Laag<select id="layerSelect"><option value="all">Alle lagen</option><option value="2">Laag 2 - Data Link</option><option value="3">Laag 3 - Network</option><option value="4">Laag 4 - Transport</option><option value="7">Laag 7 - Application</option></select></label>
+        <button id="flashBtn" class="secondary">Toon voorbeeld</button>
+      </div>
+      <div id="flashResult" class="result"></div>
+    </section>
+  </main>
+
+  <script>
+    function ipv4ToInt(address) {
+      const octets = address.split('.').map(Number);
+      if (octets.length !== 4 || octets.some(o => Number.isNaN(o) || o < 0 || o > 255)) throw new Error('Ongeldig IPv4-adres');
+      return ((octets[0] << 24) >>> 0) + ((octets[1] << 16) >>> 0) + ((octets[2] << 8) >>> 0) + octets[3];
+    }
+    function intToIPv4(value) {
+      return [(value >>> 24) & 255, (value >>> 16) & 255, (value >>> 8) & 255, value & 255].join('.');
+    }
+    function prefixToMask(prefix) {
+      if (prefix < 0 || prefix > 32) throw new Error('Prefix moet tussen 0 en 32 liggen');
+      return intToIPv4(((0xffffffff << (32 - prefix)) >>> 0));
+    }
+    function maskToPrefix(mask) {
+      const bits = mask.split('.').map(o => Number(o).toString(2).padStart(8, '0')).join('');
+      const firstZero = bits.indexOf('0');
+      return firstZero === -1 ? 32 : firstZero;
+    }
+    function parsePrefix(value) {
+      if (/^\d+$/.test(value.trim())) return Number(value);
+      if (/^\d+\.\d+\.\d+\.\d+$/.test(value.trim())) return maskToPrefix(value.trim());
+      return 24;
+    }
+
+    function calculateIp() {
+      try {
+        const address = document.getElementById('ipAddr').value.trim();
+        const prefix = parsePrefix(document.getElementById('ipPrefix').value);
+        const mask = prefixToMask(prefix);
+        const network = intToIPv4(ipv4ToInt(address) & ipv4ToInt(mask));
+        const broadcast = intToIPv4((ipv4ToInt(address) & ipv4ToInt(mask)) | (~ipv4ToInt(mask) >>> 0));
+        const wildcard = intToIPv4((~ipv4ToInt(mask)) >>> 0);
+        document.getElementById('ipResult').innerHTML = `
+IP-adres: ${address}\nPrefix: /${prefix}\nSubnetmask: ${mask}\nWildcard mask: ${wildcard}\nNetwerkadres: ${network}\nBroadcastadres: ${broadcast}\nHostbereik: ${intToIPv4(ipv4ToInt(network) + 1)} - ${intToIPv4(ipv4ToInt(broadcast) - 1)}
+        `;
+      } catch (error) {
+        document.getElementById('ipResult').innerHTML = 'Fout: ' + error.message;
+      }
+    }
+
+    function generateVlanConfig() {
+      const vlans = document.getElementById('vlansInput').value.split(',').map(v => v.trim()).filter(Boolean);
+      const subnet = document.getElementById('vlanSubnet').value.trim();
+      const prefix = document.getElementById('vlanPrefix').value.trim();
+      if (!vlans.length) {
+        document.getElementById('vlanResult').innerHTML = 'Voer minimaal 1 VLAN in.';
+        return;
+      }
+      const lines = [];
+      lines.push('Switch(config)# vlan ' + vlans[0]);
+      lines.push('Switch(config-vlan)# name VLAN' + vlans[0]);
+      for (let i = 1; i < vlans.length; i += 1) {
+        lines.push('Switch(config)# vlan ' + vlans[i]);
+        lines.push('Switch(config-vlan)# name VLAN' + vlans[i]);
+      }
+      lines.push('');
+      lines.push('Switch(config)# interface g0/1');
+      lines.push('Switch(config-if)# switchport mode trunk');
+      lines.push('Switch(config-if)# switchport trunk allowed vlan ' + vlans.join(','));
+      lines.push('');
+      vlans.forEach((vlan, idx) => {
+        const gateway = `${subnet.split('.').slice(0, 3).join('.')}.${Number(subnet.split('.')[3] || '1') + idx + 1}`;
+        lines.push('Router(config)# interface g0/0/0.' + vlan);
+        lines.push('Router(config-subif)# encapsulation dot1Q ' + vlan);
+        lines.push('Router(config-subif)# ip address ' + gateway + ' ' + prefixToMask(Number(prefix)));
+      });
+      document.getElementById('vlanResult').innerHTML = lines.join('\n');
+    }
+
+    function generateDhcpConfig() {
+      try {
+        const network = document.getElementById('dhcpNetwork').value.trim();
+        const prefix = Number(document.getElementById('dhcpPrefix').value);
+        const gateway = document.getElementById('dhcpGateway').value.trim();
+        const dns = document.getElementById('dhcpDns').value.trim();
+        const excludedStart = document.getElementById('dhcpExcludedStart').value.trim();
+        const excludedEnd = document.getElementById('dhcpExcludedEnd').value.trim();
+        const lines = [];
+        lines.push('Router(config)# ip dhcp excluded-address ' + excludedStart + ' ' + excludedEnd);
+        lines.push('Router(config)# ip dhcp pool LAN');
+        lines.push('Router(dhcp-config)# network ' + network + ' ' + prefixToMask(prefix));
+        lines.push('Router(dhcp-config)# default-router ' + gateway);
+        lines.push('Router(dhcp-config)# dns-server ' + dns);
+        document.getElementById('dhcpResult').innerHTML = lines.join('\n');
+      } catch (error) {
+        document.getElementById('dhcpResult').innerHTML = 'Fout: ' + error.message;
+      }
+    }
+
+    function generateAcl() {
+      try {
+        const network = document.getElementById('aclNetwork').value.trim();
+        const prefix = Number(document.getElementById('aclPrefix').value);
+        const action = document.getElementById('aclAction').value;
+        const protocol = document.getElementById('aclProtocol').value;
+        const port = document.getElementById('aclPort').value.trim();
+        const wildcard = intToIPv4((~ipv4ToInt(prefixToMask(prefix))) >>> 0);
+        let line = `Router(config)# ${action} ${protocol} ${network} ${wildcard}`;
+        if (protocol === 'tcp' || protocol === 'udp') {
+          line += port ? ` eq ${port}` : '';
+        }
+        document.getElementById('aclResult').innerHTML = line;
+      } catch (error) {
+        document.getElementById('aclResult').innerHTML = 'Fout: ' + error.message;
+      }
+    }
+
+    function generateRouterOnStick() {
+      try {
+        const vlan = document.getElementById('rostVlan').value.trim();
+        const subnet = document.getElementById('rostSubnet').value.trim();
+        const prefix = Number(document.getElementById('rostPrefix').value);
+        const interfaceName = document.getElementById('rostInterface').value.trim();
+        const gateway = `${subnet.split('.').slice(0, 3).join('.')}.1`;
+        const lines = [
+          `Router(config)# interface ${interfaceName}`,
+          `Router(config-subif)# encapsulation dot1Q ${vlan}`,
+          `Router(config-subif)# ip address ${gateway} ${prefixToMask(prefix)}`,
+          `Router(config)# interface ${interfaceName.split('.')[0]}`,
+          `Router(config-if)# no shutdown`
+        ];
+        document.getElementById('rostResult').innerHTML = lines.join('\n');
+      } catch (error) {
+        document.getElementById('rostResult').innerHTML = 'Fout: ' + error.message;
+      }
+    }
+
+    function generateStaticRoute() {
+      try {
+        const network = document.getElementById('routeNet').value.trim();
+        const prefix = Number(document.getElementById('routePrefix').value);
+        const nextHop = document.getElementById('routeNextHop').value.trim();
+        const interfaceName = document.getElementById('routeInterface').value.trim();
+        const mask = prefixToMask(prefix);
+        const line = interfaceName
+          ? `Router(config)# ip route ${network} ${mask} ${nextHop} ${interfaceName}`
+          : `Router(config)# ip route ${network} ${mask} ${nextHop}`;
+        document.getElementById('staticRouteResult').innerHTML = line;
+      } catch (error) {
+        document.getElementById('staticRouteResult').innerHTML = 'Fout: ' + error.message;
+      }
+    }
+
+    function generateSwitchPort() {
+      try {
+        const interfaceName = document.getElementById('swPort').value.trim();
+        const mode = document.getElementById('swMode').value;
+        const vlan = document.getElementById('swVlan').value.trim();
+        const nativeVlan = document.getElementById('swNativeVlan').value.trim();
+        const allowedVlans = document.getElementById('swAllowedVlan').value.trim();
+        const lines = [`Switch(config)# interface ${interfaceName}`];
+        if (mode === 'access') {
+          lines.push('Switch(config-if)# switchport mode access');
+          lines.push(`Switch(config-if)# switchport access vlan ${vlan}`);
+        } else {
+          lines.push('Switch(config-if)# switchport mode trunk');
+          lines.push(`Switch(config-if)# switchport trunk native vlan ${nativeVlan}`);
+          lines.push(`Switch(config-if)# switchport trunk allowed vlan ${allowedVlans}`);
+        }
+        document.getElementById('swPortResult').innerHTML = lines.join('\n');
+      } catch (error) {
+        document.getElementById('swPortResult').innerHTML = 'Fout: ' + error.message;
+      }
+    }
+
+    function generateSecurityCommands() {
+      try {
+        const type = document.getElementById('secType').value;
+        const vlan = document.getElementById('secVlan').value.trim();
+        const interfaceName = document.getElementById('secInterface').value.trim();
+        let lines = [];
+        if (type === 'dhcp-snooping') {
+          lines = [
+            'Switch(config)# ip dhcp snooping',
+            `Switch(config)# ip dhcp snooping vlan ${vlan}`,
+            `Switch(config-if)# interface ${interfaceName}`,
+            `Switch(config-if)# ip dhcp snooping trust`
+          ];
+        } else if (type === 'dai') {
+          lines = [
+            `Switch(config)# ip arp inspection vlan ${vlan}`,
+            `Switch(config-if)# interface ${interfaceName}`,
+            'Switch(config-if)# ip arp inspection trust'
+          ];
+        } else if (type === 'bpduguard') {
+          lines = [
+            `Switch(config-if)# interface ${interfaceName}`,
+            'Switch(config-if)# spanning-tree portfast',
+            'Switch(config-if)# spanning-tree bpduguard enable'
+          ];
+        } else {
+          lines = [
+            `Switch(config)# interface ${interfaceName}`,
+            'Switch(config-if)# switchport nonegotiate',
+            'Switch(config)# no dtp'
+          ];
+        }
+        document.getElementById('secResult').innerHTML = lines.join('\n');
+      } catch (error) {
+        document.getElementById('secResult').innerHTML = 'Fout: ' + error.message;
+      }
+    }
+
+    function classifyRoute() {
+      const route = document.getElementById('routeInput').value.trim();
+      let classification = 'Onbekend';
+      let hint = 'Controleer de route-opmaak.';
+      if (route.startsWith('O ')) {
+        classification = 'OSPF-route';
+        hint = 'Dit is een OSPF-route uit de routingtable. De O betekent OSPF.';
+      } else if (route.startsWith('S ')) {
+        classification = 'Static route';
+        hint = 'Dit is een statische route.';
+      } else if (route.includes('connected')) {
+        classification = 'Connected route';
+        hint = 'Dit is een directe connected route.';
+      } else if (route.startsWith('C ')) {
+        classification = 'Connected route';
+        hint = 'Dit is een directe connected route.';
+      } else if (route.startsWith('O IA')) {
+        classification = 'OSPF inter-area route';
+        hint = 'Dit is een OSPF-route tussen areas.';
+      } else if (route.startsWith('0.0.0.0')) {
+        classification = 'Default route';
+        hint = 'Dit is een default route.';
+      }
+      document.getElementById('routeResult').innerHTML = `Type: ${classification}\nUitleg: ${hint}`;
+    }
+
+    function showFlashcard() {
+      const layer = document.getElementById('layerSelect').value;
+      const examples = {
+        all: [
+          { layer: 'Layer 2', example: 'ARP', note: 'IP omzetten naar MAC.' },
+          { layer: 'Layer 3', example: 'IP', note: 'Adressering en routing.' },
+          { layer: 'Layer 4', example: 'TCP', note: 'Betrouwbare transport.' },
+          { layer: 'Layer 7', example: 'DHCP', note: 'Automatische IP-configuratie.' }
+        ],
+        2: [{ layer: 'Layer 2', example: 'ARP', note: 'IP omzetten naar MAC.' }, { layer: 'Layer 2', example: 'Ethernet', note: 'Frame-overdracht op lokaal netwerk.' }],
+        3: [{ layer: 'Layer 3', example: 'IP', note: 'Adressering en routing.' }, { layer: 'Layer 3', example: 'ICMP', note: 'Ping en foutmeldingen.' }],
+        4: [{ layer: 'Layer 4', example: 'TCP', note: 'Betrouwbare transport.' }, { layer: 'Layer 4', example: 'UDP', note: 'Snelle, niet-betrouwbare transport.' }],
+        7: [{ layer: 'Layer 7', example: 'DHCP', note: 'Automatische IP-configuratie.' }, { layer: 'Layer 7', example: 'DNS', note: 'Naam naar IP-vertaling.' }]
+      };
+      const list = examples[layer];
+      const random = list[Math.floor(Math.random() * list.length)];
+      document.getElementById('flashResult').innerHTML = `${random.layer}\nProtocol: ${random.example}\nUitleg: ${random.note}`;
+    }
+
+    document.getElementById('calcIpBtn').addEventListener('click', calculateIp);
+    document.getElementById('vlanBtn').addEventListener('click', generateVlanConfig);
+    document.getElementById('dhcpBtn').addEventListener('click', generateDhcpConfig);
+    document.getElementById('aclBtn').addEventListener('click', generateAcl);
+    document.getElementById('rostBtn').addEventListener('click', generateRouterOnStick);
+    document.getElementById('staticRouteBtn').addEventListener('click', generateStaticRoute);
+    document.getElementById('swPortBtn').addEventListener('click', generateSwitchPort);
+    document.getElementById('secBtn').addEventListener('click', generateSecurityCommands);
+    document.getElementById('routeBtn').addEventListener('click', classifyRoute);
+    document.getElementById('flashBtn').addEventListener('click', showFlashcard);
+
+    calculateIp();
+    generateVlanConfig();
+    generateDhcpConfig();
+    generateAcl();
+    generateRouterOnStick();
+    generateStaticRoute();
+    generateSwitchPort();
+    generateSecurityCommands();
+    classifyRoute();
+    showFlashcard();
+  </script>
+</body>
+</html>

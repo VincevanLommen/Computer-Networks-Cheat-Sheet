@@ -286,3 +286,55 @@ Switch: F0/9      → switchport access vlan 20 (naar PC)
 - blokkeer UDP verkeer van overal naar 10.0.0.0/24
 - lt 1000 = less than port 1000 (poorten 0-999)
 - any = elk bronadres
+
+---
+
+# NAT en PAT
+
+## Wat is NAT?
+- NAT vertaalt privé-adressen naar publieke adressen
+- handig voor internettoegang vanuit een private LAN
+- NAT wordt vaak gedaan op een router tussen inside en outside netwerken
+
+## ```ip nat inside```
+- zet een interface als inside interface
+- dit is het netwerk dat vertaald wordt (bijvoorbeeld een LAN)
+
+## ```ip nat outside```
+- zet een interface als outside interface
+- dit is het netwerk naar buiten toe (bijvoorbeeld internet of een andere router)
+
+## ```ip nat inside source static 192.168.10.254 209.165.201.5```
+- maakt een vaste statische NAT-vertaling aan
+- 192.168.10.254 = inside local address
+- 209.165.201.5 = inside global address
+- ideaal voor een server die altijd dezelfde publieke IP moet hebben
+
+## ```ip nat pool MYPOOL 209.165.201.1 209.165.201.10 netmask 255.255.255.224```
+- maakt een pool met publieke adressen voor dynamic NAT
+- deze adressen kunnen automatisch toegewezen worden aan interne clients
+
+## ```access-list 1 permit 192.168.10.0 0.0.0.255```
+- bepaalt welke interne adressen mogen vertalen
+- in dit voorbeeld zijn dat alle adressen uit 192.168.10.0/24
+
+## ```ip nat inside source list 1 pool MYPOOL```
+- gebruikt de ACL om dynamic NAT uit te voeren
+- elk toegelaten intern adres krijgt een extern adres uit de pool
+
+## ```ip nat inside source list 1 pool MYPOOL overload```
+- dit is PAT (Port Address Translation)
+- meerdere interne clients delen één of enkele publieke adressen
+- verschil met dynamic NAT: poortnummers worden gebruikt om de verbindingen te onderscheiden
+
+## ```show ip nat translations```
+- toont actieve NAT-vertalingen
+- handig om te zien welke interne adressen vertaald zijn
+
+## ```show ip nat statistics```
+- toont tellers en NAT-instellingen
+- je ziet hoeveel vertalingen actief zijn en of er hits/misses zijn
+
+## ```clear ip nat statistics```
+- wist de NAT-statistieken
+- handig om na een test opnieuw te beginnen
