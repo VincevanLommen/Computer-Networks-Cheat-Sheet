@@ -35,6 +35,75 @@ Hoeveel subnetten kan je maken van het 172.16.0.0/16 als je /21 subnet gebruikt?
 - Van `00000` tot `11111`
 - Aantal subnetten: 2^5 = **32 mogelijke subnetten**
 
+# VLSM (Variable Length Subnet Mask)
+
+VLSM betekent dat je binnen één groot netwerk **verschillende subnetgroottes** gebruikt.
+
+## Belangrijk idee
+
+- Bij **FLSM** krijg je alle subnetten met dezelfde mask
+- Bij **VLSM** krijg je subnetten met verschillende masks, afhankelijk van hoeveel hosts een segment nodig heeft
+- Zo verlies je minder IP-adressen en heb je minder afval
+
+## Waarom VLSM nuttig is
+
+- Grote netwerken worden efficiënter verdeeld
+- Kleine groepen krijgen een klein subnet
+- Grote groepen krijgen een groter subnet
+- Je kunt een netwerk beter aanpassen aan de echte behoefte
+
+## Regels voor VLSM
+
+1. Begin met het grootste subnet (meeste hosts)
+2. Gebruik daarna het volgende grootste subnet
+3. Neem steeds het volgende beschikbare blok in het netwerk
+4. Controleer of het subnet genoeg bruikbare adressen heeft
+5. Vermijd overlap: elk subnet moet uniek zijn
+
+## Formule voor bruikbare hosts
+
+- Bruikbare hosts = 2^h - 2
+- Waarbij `h` het aantal hostbits is
+
+## Voorbeeld VLSM
+
+We hebben netwerk: `192.168.1.0/24`
+
+We moeten verdelen in:
+- VLAN 10 → 50 hosts
+- VLAN 20 → 20 hosts
+- VLAN 30 → 10 hosts
+- WAN-link → 2 hosts
+
+### Stap 1: kies de juiste prefix per groep
+
+| Groep | Hosts nodig | Juiste subnet | Bruikbare hosts |
+|---|---:|---:|---:|
+| VLAN 10 | 50 | `/26` | 62 |
+| VLAN 20 | 20 | `/27` | 30 |
+| VLAN 30 | 10 | `/28` | 14 |
+| WAN-link | 2 | `/30` | 2 |
+
+### Stap 2: toewijzen van de subnetten
+
+- `192.168.1.0/26` → VLAN 10
+- `192.168.1.64/27` → VLAN 20
+- `192.168.1.96/28` → VLAN 30
+- `192.168.1.112/30` → WAN-link
+
+### Waarom dit klopt
+
+- `/26` geeft 64 adressen, genoeg voor 50 hosts
+- `/27` geeft 32 adressen, genoeg voor 20 hosts
+- `/28` geeft 16 adressen, genoeg voor 10 hosts
+- `/30` geeft 4 adressen, genoeg voor 2 hosts op een point-to-point link
+
+## Kort geheugensteuntje
+
+- **VLSM** = verschillende subnetmasks binnen één netwerk
+- **Doel** = IP-adressen zo efficiënt mogelijk verdelen
+- **Start** = grootste groep eerst
+
 # Netwerkadres berekenen
 
 - Netwerkadres eindigt altijd op 0 (host-bits worden 0)

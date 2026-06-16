@@ -1,19 +1,20 @@
 # Overzicht adressen
 
-| Device name   | Port      | IP                               |
-|---------------|-----------|-----------------------------------|
-| UCLL-RTR-01   | VLAN 10   | 172.16.255.254/16                 |
-|               |           | 2001:ACAD:DB8:10::1/64            |
-|               |           | FE80::1                           |
-| UCLL-RTR-01   | VLAN 20   | 172.17.255.254/16                 |
-|               |           | 2001:ACAD:DB8:20::1/64            |
-|               |           | FE80::1                           |
-| UCLL-RTR-01   | VLAN 30   | 172.18.255.254/16                 |
-| UCLL-RTR-01   | Se0/0/0   | 1.1.1.2/8                         |
-| UCLL-RTR-01   | Se0/0/1   | 2.2.2.2/8                         |
-| DCNT-RTR-01   | Se0/0/0   | 1.1.1.1/8                         |
-| DCNT-RTR-01   | Gig0/0    | 10.0.1.254/24                     |
-| DCNT-SRV-01   | Fa0       | 10.0.1.5 (al geconfigureerd, ter info: DNS & DHCP server) |
+> Deze versie is aangepast zodat de adressen, DHCP-pools en subnetting logisch consistent blijven in Packet Tracer.
+
+| Device name | Port | IP |
+|-------------|------|----|
+| UCLL-RTR-01 | VLAN 10 | 172.16.10.1/24 |
+| UCLL-RTR-01 | VLAN 20 | 172.16.20.1/24 |
+| UCLL-RTR-01 | VLAN 30 | 172.16.30.1/24 |
+| UCLL-RTR-01 | VLAN 10 (IPv6) | 2001:ACAD:DB8:10::1/64 |
+| UCLL-RTR-01 | VLAN 20 (IPv6) | 2001:ACAD:DB8:20::1/64 |
+| UCLL-RTR-01 | VLAN 30 (IPv6) | 2001:ACAD:DB8:30::1/64 |
+| UCLL-RTR-01 | Se0/0/0 | 1.1.1.2/8 |
+| UCLL-RTR-01 | Se0/0/1 | 2.2.2.2/8 |
+| DCNT-RTR-01 | Se0/0/0 | 1.1.1.1/8 |
+| DCNT-RTR-01 | G0/0 | 10.0.1.254/24 |
+| DCNT-SRV-01 | Fa0 | 10.0.1.5 (DNS + DHCP-server) |
 
 ---
 
@@ -21,165 +22,245 @@
 
 In het UCLL-netwerk bestaan 3 VLAN’s:
 
-- VLAN 10: Studenten  
-- VLAN 20: Lectoren  
-- VLAN 30: Researchers  
+- VLAN 10: Studenten
+- VLAN 20: Lectoren
+- VLAN 30: Researchers
 
 Maak deze VLAN’s overal waar nodig aan.
 
-Zorg dat de PC’s van de studenten (groene kader) in VLAN 10 geplaatst worden, de PC’s van de lectoren (rode kader) in VLAN 20 en de PC’s van de researchers (blauwe kader) in VLAN 30.
+Zorg dat de PC’s van de studenten in VLAN 10 geplaatst worden, de lectoren in VLAN 20 en de researchers in VLAN 30.
 
-Configureer alle links juist, zodat inter-VLAN routing mogelijk is.
+Configureer inter-VLAN routing via de subinterfaces van UCLL-RTR-01.
 
 ---
 
 # DHCP
 
-Uiteraard willen we graag dat de PC’s in het UCLL-netwerk hun netwerkadressen automatisch toebedeeld krijgen. Hiervoor configureren we DHCP.
-
 ## Studenten DHCP
 
-Voor het Studenten-netwerk maak je een pool met de naam **VLAN10_POOL**.  
-Alle bruikbare adressen mogen uitgedeeld worden.  
-Geef ook info mee over de route en DNS-server.  
-Ook voor IPv6 dient een stateless DHCP-server geconfigureerd te worden.  
-De pool noem je **VLAN10_POOL_IPV6**.
+- Gebruik lokaal op UCLL-RTR-01 een pool **VLAN10_POOL**.
+- Network: `172.16.10.0/24`
+- Default gateway: `172.16.10.1`
+- DNS-server: `10.0.1.5`
+- IPv6: configureer stateless DHCPv6 met pool **VLAN10_POOL_IPV6**.
 
 ## Lectoren DHCP
 
-Voor het Lectoren-netwerk maak je een pool met de naam **VLAN20_POOL**.  
-De adressen **172.17.0.1–172.17.9.255** zijn gereserveerd voor statische configuraties en mogen niet mee uitgedeeld worden.  
-Alle andere bruikbare adressen mogen uitgedeeld worden.  
-Geef ook info mee over de router en DNS-server.
-
-Voor IPv6 maken de PC’s gebruik van **SLAAC**. Configureer hiervoor het nodige.
+- Gebruik lokaal op UCLL-RTR-01 een pool **VLAN20_POOL**.
+- Reserveer `172.16.20.1` tot `172.16.20.10` voor statische configuraties.
+- Network: `172.16.20.0/24`
+- Default gateway: `172.16.20.1`
+- DNS-server: `10.0.1.5`
+- IPv6: gebruik SLAAC.
 
 ## Researchers DHCP
 
-Zorg ervoor dat alle DHCP-requests op dit netwerk doorgestuurd worden naar de server in het datacenter-netwerk.  
-Hier is de nodige configuratie al gebeurd.
+- Configureer op de router-interface voor VLAN 30 een `ip helper-address 10.0.1.5`.
+- De DHCP-requests worden dan doorgestuurd naar de server in het datacenter.
+- IPv6: gebruik ook SLAAC of een geschikte IPv6-configuratie op de router.
 
 ---
 
 # OSPF
 
-Tussen UCLL en het datacenter dienen dynamisch routes uitgewisseld te worden.  
-Maak gebruik van **OSPF ID 10** om op alle nodige routers OSPF te configureren.
+Gebruik **OSPF proces 10** op beide routers.
 
-Zorg ervoor dat OSPF enkel tussen de routers uitgewisseld wordt, en dat er geen OSPF-verkeer op de LAN-netwerken terecht komt.  
-Maak gebruik van **network statements** in het router OSPF menu.
+- UCLL-RTR-01 en DCNT-RTR-01 moeten OSPF-uitwisselingen alleen over de serial links doen.
+- De LAN-interfaces moeten als `passive-interface` worden ingesteld.
+- Gebruik `network` statements zodat alleen de juiste netwerken in OSPF komen.
 
 ---
 
 # NAT
 
-Configureer NAT op **UCLL-RTR-01** zodat de 3 LAN-netwerken (VLAN 10, VLAN 20 en VLAN 30) toegang hebben tot het internet via het publieke IP-adres van interface **Se0/0/0**.
+Configureer NAT op UCLL-RTR-01 zodat alle 3 LAN-netwerken internettoegang krijgen via `Se0/0/0`.
 
-1. Maak een ACL aan die de 3 LAN-netwerken toelaat: definieer een standaard ACL (nummer 1 via `ip access-list` commando) die de subnets voor de VLAN-netwerken toelaat.  
-2. Markeer de inside en outside interfaces.  
-3. Activeer PAT (overload): koppel de ACL aan de outside-interface Se0/0/0 met het overload-keyword, zodat alle 3 LAN-netwerken vertaald worden naar het IP-adres van Se0/0/0 (1.1.1.2).
+1. Maak een standaard ACL die de 3 VLAN-subnets toelaat.
+2. Markeer de juiste interfaces als `inside` en `outside`.
+3. Activeer PAT met `ip nat inside source list 1 interface Se0/0/0 overload`.
 
 ---
 
 # Etherchannel
 
-Om het netwerk in het datacenter optimaal te gebruiken, dient in het datacenter een etherchannel-link geconfigureerd te worden tussen **UCLL-SW-02** en **UCLL-SW-03**, op poorten **fastEthernet 0/23 en 0/24**.  
-Maak gebruik van **channel-ID 1** en **actieve modus**.
+Configureer een etherchannel tussen UCLL-SW-02 en UCLL-SW-03 op poorten `fa0/23` en `fa0/24`.
 
+- Channel ID: `1`
+- Mode: `active`
+- Trunk alle VLAN’s 10, 20 en 30
 
-![alt text](image.png)
-
+---
 
 # Oplossing
 
-## VLANs Configureren
+## 1. Basisconfiguratie van UCLL-RTR-01
 
-### UCLL-RTR-01
+```text
+Router> enable
+Router# configure terminal
+Router(config)# ip routing
+Router(config)# ipv6 unicast-routing
+```
 
-1. Router>```enable```
-2. Router#```conf t```
+## 2. Subinterfaces voor inter-VLAN routing
 
-#### Subinterfaces (inter-VLAN routing)
+```text
+Router(config)# interface g0/0/0
+Router(config-if)# no shutdown
 
-3. UCLL-RTR-01(config)#```interface g0/0/0.10```
-4. UCLL-RTR-01(config-subif)#```encapsulation dot1Q 10```
-5. UCLL-RTR-01(config-subif)#```ip address 172.16.255.254 255.255.0.0```
-6. UCLL-RTR-01(config-subif)#```ipv6 address 2001:ACAD:DB8:10::1/64```
-7. UCLL-RTR-01(config-subif)#```ipv6 address FE80::1 link-local```
+Router(config)# interface g0/0/0.10
+Router(config-subif)# encapsulation dot1Q 10
+Router(config-subif)# ip address 172.16.10.1 255.255.255.0
+Router(config-subif)# ipv6 address 2001:ACAD:DB8:10::1/64
+Router(config-subif)# ipv6 nd prefix 2001:ACAD:DB8:10::/64
+Router(config-subif)# ipv6 nd other-config-flag
+Router(config-subif)# ipv6 dhcp server VLAN10_POOL_IPV6
+Router(config-subif)# no shutdown
 
-8. UCLL-RTR-01(config)#```interface g0/0/0.20```
-9. UCLL-RTR-01(config-subif)#```encapsulation dot1Q 20```
-10. UCLL-RTR-01(config-subif)#```ip address 172.17.255.254 255.255.0.0```
-11. UCLL-RTR-01(config-subif)#```ipv6 address 2001:ACAD:DB8:20::1/64```
-12. UCLL-RTR-01(config-subif)#```ipv6 address FE80::1 link-local```
+Router(config)# interface g0/0/0.20
+Router(config-subif)# encapsulation dot1Q 20
+Router(config-subif)# ip address 172.16.20.1 255.255.255.0
+Router(config-subif)# ipv6 address 2001:ACAD:DB8:20::1/64
+Router(config-subif)# ipv6 nd prefix 2001:ACAD:DB8:20::/64
+Router(config-subif)# no shutdown
 
-13. UCLL-RTR-01(config)#```interface g0/0/0.30```
-14. UCLL-RTR-01(config-subif)#```encapsulation dot1Q 30```
-15. UCLL-RTR-01(config-subif)#```ip address 172.18.255.254 255.255.0.0```
+Router(config)# interface g0/0/0.30
+Router(config-subif)# encapsulation dot1Q 30
+Router(config-subif)# ip address 172.16.30.1 255.255.255.0
+Router(config-subif)# ipv6 address 2001:ACAD:DB8:30::1/64
+Router(config-subif)# ipv6 nd prefix 2001:ACAD:DB8:30::/64
+Router(config-subif)# ip helper-address 10.0.1.5
+Router(config-subif)# no shutdown
+```
 
-#### Interface G0/0/0 activeren
+## 3. Serial interfaces
 
-16. UCLL-RTR-01(config)#```interface g0/0/0```
-17. UCLL-RTR-01(config-if)#```no shutdown```
+```text
+Router(config)# interface se0/0/0
+Router(config-if)# ip address 1.1.1.2 255.0.0.0
+Router(config-if)# no shutdown
 
-#### Serial Interfaces
+Router(config)# interface se0/0/1
+Router(config-if)# ip address 2.2.2.2 255.0.0.0
+Router(config-if)# no shutdown
+```
 
-18. UCLL-RTR-01(config)#```interface se0/0/0```
-19. UCLL-RTR-01(config-if)#```ip address 1.1.1.2 255.0.0.0```
-20. UCLL-RTR-01(config-if)#```no shutdown```
+## 4. DHCP op UCLL-RTR-01
 
-21. UCLL-RTR-01(config)#```interface se0/0/1```
-22. UCLL-RTR-01(config-if)#```ip address 2.2.2.2 255.0.0.0```
-23. UCLL-RTR-01(config-if)#```no shutdown```
+```text
+Router(config)# ip dhcp excluded-address 172.16.10.1
+Router(config)# ip dhcp pool VLAN10_POOL
+Router(dhcp-config)# network 172.16.10.0 255.255.255.0
+Router(dhcp-config)# default-router 172.16.10.1
+Router(dhcp-config)# dns-server 10.0.1.5
 
----
+Router(config)# ip dhcp excluded-address 172.16.20.1 172.16.20.10
+Router(config)# ip dhcp pool VLAN20_POOL
+Router(dhcp-config)# network 172.16.20.0 255.255.255.0
+Router(dhcp-config)# default-router 172.16.20.1
+Router(dhcp-config)# dns-server 10.0.1.5
 
-### DCNT-RTR-01
+Router(config)# ipv6 dhcp pool VLAN10_POOL_IPV6
+Router(config-dhcpv6)# dns-server 2001:4860:4860::8888
+Router(config-dhcpv6)# domain-name lab.local
+```
 
-1. Router>```enable```
-2. Router#```conf t```
+## 5. OSPF configureren
 
-#### Interface Serial0/0/0
+```text
+Router(config)# router ospf 10
+Router(config-router)# router-id 2.2.2.2
+Router(config-router)# network 1.0.0.0 0.255.255.255 area 0
+Router(config-router)# network 2.0.0.0 0.255.255.255 area 0
+Router(config-router)# passive-interface g0/0/0.10
+Router(config-router)# passive-interface g0/0/0.20
+Router(config-router)# passive-interface g0/0/0.30
+```
 
-3. DCNT-RTR-01(config)#```interface se0/0/0```
-4. DCNT-RTR-01(config-if)#```ip address 1.1.1.1 255.0.0.0```
-5. DCNT-RTR-01(config-if)#```no shutdown```
+## 6. NAT configureren
 
-#### Interface Gigabit Ethernet 0/0
+```text
+Router(config)# access-list 1 permit 172.16.10.0 0.0.0.255
+Router(config)# access-list 1 permit 172.16.20.0 0.0.0.255
+Router(config)# access-list 1 permit 172.16.30.0 0.0.0.255
 
-6. DCNT-RTR-01(config)#```interface g0/0```
-7. DCNT-RTR-01(config-if)#```ip address 10.0.1.254 255.255.255.0```
-8. DCNT-RTR-01(config-if)#```no shutdown```
+Router(config)# interface g0/0/0.10
+Router(config-subif)# ip nat inside
 
----
+Router(config)# interface g0/0/0.20
+Router(config-subif)# ip nat inside
 
-### Switches (VLAN-aanmaak op alle nodige switches)
+Router(config)# interface g0/0/0.30
+Router(config-subif)# ip nat inside
 
-1. Switch>```enable```
-2. Switch#```conf t```
+Router(config)# interface se0/0/0
+Router(config-if)# ip nat outside
 
-#### VLANs aanmaken
+Router(config)# ip nat inside source list 1 interface se0/0/0 overload
+```
 
-3. Switch(config)#```vlan 10```
-4. Switch(config-vlan)#```name Studenten```
-5. Switch(config)#```vlan 20```
-6. Switch(config-vlan)#```name Lectoren```
-7. Switch(config)#```vlan 30```
-8. Switch(config-vlan)#```name Researchers```
+## 7. DCNT-RTR-01
 
-#### Access-poorten toewijzen aan VLANs
+```text
+Router> enable
+Router# configure terminal
+Router(config)# interface se0/0/0
+Router(config-if)# ip address 1.1.1.1 255.0.0.0
+Router(config-if)# no shutdown
 
-9. Switch(config)#```interface range f0/1-22```
-10. Switch(config-if-range)#```switchport mode access```
-11. Switch(config-if-range)#```switchport access vlan 10```
+Router(config)# interface g0/0
+Router(config-if)# ip address 10.0.1.254 255.255.255.0
+Router(config-if)# no shutdown
 
-12. Switch(config)#```interface range f0/1-22```
-13. Switch(config-if-range)#```switchport access vlan 10```
+Router(config)# router ospf 10
+Router(config-router)# router-id 1.1.1.1
+Router(config-router)# network 1.0.0.0 0.255.255.255 area 0
+Router(config-router)# network 10.0.1.0 0.0.0.255 area 0
+Router(config-router)# passive-interface g0/0
+```
 
-*Herhaal dit voor VLAN 20 en 30 op de respectievelijke poorten*
+## 8. Switches en Etherchannel
 
-#### Trunk-poorten configureren
+```text
+Switch(config)# vlan 10
+Switch(config-vlan)# name Studenten
+Switch(config)# vlan 20
+Switch(config-vlan)# name Lectoren
+Switch(config)# vlan 30
+Switch(config-vlan)# name Researchers
 
-14. Switch(config)#```interface g0/1```
-15. Switch(config-if)#```switchport mode trunk```
-16. Switch(config-if)#```switchport trunk allowed vlan 10,20,30```
+Switch(config)# interface range fa0/23 - 24
+Switch(config-if-range)# switchport mode trunk
+Switch(config-if-range)# channel-group 1 mode active
+
+Switch(config)# interface port-channel 1
+Switch(config-if)# switchport mode trunk
+Switch(config-if)# switchport trunk allowed vlan 10,20,30
+```
+
+## 9. Access-poorten per VLAN
+
+```text
+Switch(config)# interface f0/1
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport access vlan 10
+
+Switch(config)# interface f0/2
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport access vlan 20
+
+Switch(config)# interface f0/3
+Switch(config-if)# switchport mode access
+Switch(config-if)# switchport access vlan 30
+```
+
+## 10. Extra controle
+
+Gebruik deze checks om te zien of alles werkt:
+
+- `show ip interface brief`
+- `show ip route`
+- `show ip ospf neighbor`
+- `show ip nat translations`
+- `show ip dhcp binding`
+- `show ipv6 interface brief`
