@@ -39,17 +39,43 @@
 1. R1(config)#```ip route 0.0.0.0 0.0.0.0 NEXT_HOP_IP```
 
 ### Loopback
-1. (config)# loopback
 
-### ROuter id
-1. R1(config-router)#```router-id 1.1.1.1```
+1. Router(config)#```interface loopback 0```
+2. Router(config-if)#```ip address 1.1.1.1 255.255.255.255```
 
-### Cost
-cost op interface
-1. (config-if)#```ip ospf cost 123```
+### OSPF
 
-referaentie-bitrate aanpassen
-1. (config-router)#```auto-cost referebce-bandwidth [snelheid in mb/s]```
+#### OSPF starten
+
+1. Router(config)#```router ospf 10```
+
+#### Router ID instellen
+
+2. Router(config-router)#```router-id 1.1.1.1```
+
+#### Network statements toevoegen
+
+3. Router(config-router)#```network 10.20.30.0 0.0.0.255 area 0```
+
+#### Kostwaarde aanpassen (op interface)
+
+4. Router(config)#```interface G0/0/0```
+5. Router(config-if)#```ip ospf cost 123```
+
+#### Auto-cost reference-bandwidth aanpassen
+
+6. Router(config-router)#```auto-cost reference-bandwidth 1000```
+
+#### Dead timers configureren
+
+7. Router(config)#```interface GigabitEthernet0/1```
+8. Router(config-if)#```ip ospf hello-interval 5```
+9. Router(config-if)#```ip ospf dead-interval 20```
+
+#### OSPF per interface (alternatieve methode)
+
+10. Router(config)#```interface range g0/0/0-2```
+11. Router(config-if-range)#```ip ospf 10 area 0```
 
 ## Switch
 1. Switch>```enable```

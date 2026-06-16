@@ -7,7 +7,8 @@
 * VTY → SSH
 * Loopback interface → ip toekennen aan router om te pingen, ssh
 * Seriele interface PtP max 1 router
-
+* 169.x.x.x → DHCP doet niets
+  
 # Subnetten berekenen
 
 ## Voorbeeld
@@ -181,6 +182,7 @@ Toont als:
 
 * PAT → Port adress translation
 * Hoe weet je als je nat hebt? → Lokaal ip naar publiek
+* Server soms buiten nat
 
 ### Piravate ip
 - 192.168.
